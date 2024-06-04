@@ -1,0 +1,2 @@
+trace_gps,longitude,latitude,start_time,end_time,transportation_mode,user_id
+"[[2.44, 48.74], [2.45, 48.74]]",2.44,48.74,2024-01-01 12:00:00.115000+00:00,2024-01-01 12:01:00.115000+00:00,6,1
