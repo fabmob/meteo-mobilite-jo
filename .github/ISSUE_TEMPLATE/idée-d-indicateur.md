@@ -10,10 +10,10 @@ assignees: ''
 ## Description de l'indicateur
 
 ## Source de l'indicateur
-- [ ] Interne
-- [ ] Feedback partenaire / Atelier
-- [ ] Indicateur existant
-- [ ] Autre
+- ⬜ Interne
+- ✅ Feedback partenaire / Atelier
+- ⬜ Indicateur existant
+- ⬜ Autre
 
 ## Illustrations, sources d'inspiration
 
