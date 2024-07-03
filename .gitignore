@@ -1,3 +1,4 @@
 computations/sources/data.csv
 computations/sources/paris_walk_nxmap.json
 static/data/*
+static/node_modules/*

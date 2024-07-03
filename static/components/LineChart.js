@@ -1,4 +1,4 @@
-const PieChart = ({ dataJson, dataUrl, dataKey, labelColorMap }) => {
+const LineChart = ({ dataJson, dataUrl, dataKey, labelColorMap }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
@@ -22,9 +22,9 @@ const PieChart = ({ dataJson, dataUrl, dataKey, labelColorMap }) => {
         const chartData = {
           labels: Object.keys(data),
           datasets: [{
-            label: 'Part modale',
+            label: 'Trips',
             data: Object.values(data).map(x => x * 100),
-            backgroundColor: labelColorMap ? Object.keys(data).map(label => labelColorMap[label]) : undefined
+            // backgroundColor: labelColorMap ? Object.keys(data).map(label => labelColorMap[label]) : undefined
           }]
         };
         if (chartInstanceRef.current) {
@@ -34,7 +34,7 @@ const PieChart = ({ dataJson, dataUrl, dataKey, labelColorMap }) => {
         } else {
           // Create new chart
           chartInstanceRef.current = new Chart(ctx, {
-            type: 'pie',
+            type: 'line',
             data: chartData,
             options: {
               responsive: true,
