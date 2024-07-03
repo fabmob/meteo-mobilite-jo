@@ -1,3 +1,7 @@
 #map { 
     height: 500px;
 }
+.position-tag {
+    width: 32px;
+    margin-right: 5px;
+}

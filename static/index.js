@@ -77,7 +77,7 @@ const sites = [
     "Paris La Défense Arena",
     "Pont Alexandre III",
     "Site d'escalade Bourget",
-    "Stade BMX de Saint-Quentin-en-Yvelines",
+    "Saint-Quentin-en-Yvelines",
     "Stade de Bordeaux",
     "Stade de France",
     "Stade de la Beaujoire",
@@ -90,18 +90,20 @@ const sites = [
     "Stade Roland-Garros",
     "Stade Tour Eiffel",
     "Stade Yves-du-Manoir",
-    "Teahupo'o, Tahiti",
+    // "Teahupo'o, Tahiti",
     "Trocadéro",
-    "Vélodrome National de Saint-Quentin-en-Yvelines"
 ]
 
 const Site = () => {
+    const toDATE = "2024-03-23"
+    const yesterDATE = "2024-03-22"
     const {siteName} = useParams()
     const [data, setData] = React.useState(null)
+    const [yesterdayData, setYesterdayData] = React.useState(null)
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                let _data = await (await fetch("/data/sites/" + siteName + "/modal_share.json")).json()
+                let _data = await (await fetch(`/data/sites/${siteName}/${toDATE}/modal_share.json`)).json()
                 _data.favoriteArrivalMode = ""
                 _data.favoriteDepartureMode = ""
                 let maxVal = 0
@@ -125,6 +127,8 @@ const Site = () => {
                     }
                 }
                 setData(_data)
+
+                setYesterdayData(await (await fetch(`/data/sites/${siteName}/${yesterDATE}/modal_share.json`)).json())
             } catch (error) {
                 console.log(siteName, "data couldn't be fetched", error)
                 setData(null)
@@ -134,10 +138,12 @@ const Site = () => {
         fetchData()
     }, [siteName])
 
+    const arrivalEvolution = (data && yesterdayData) ? Math.round((data.end.Total_Count - yesterdayData.end.Total_Count) / data.end.Total_Count * 100) : 0
+    const departureEvolution = (data && yesterdayData) ? Math.round((data.start.Total_Count - yesterdayData.start.Total_Count) / data.start.Total_Count * 100) : 0
     return (
         <section className="section">
             <h1 className="title">
-                {siteName}
+                {siteName}, le {new Date(toDATE).toLocaleDateString()}
             </h1>
             { !data ? <h2 className="subtitle">Pas assez de données disponibles sur ce site</h2> :
                 <div>
@@ -145,9 +151,9 @@ const Site = () => {
                     <div className="columns">
                         <div className="column is-4 content">
                             <ul>
-                                <li>Pour rejoindre le site, le mode de transport favorisé est <span class="tag is-info"><b>{transportModeTranslate[data.favoriteArrivalMode]} {transportModeEmoji[data.favoriteArrivalMode]}</b></span></li>
-                                <li>L'impact CO2 de ces déplacements est estimé à <span class="tag is-info"><b>XX kgCO2</b></span></li>
-                                <li>Comparée à hier, la quantité d'arrivées a évolué de <span class="tag is-success"><b>+XX%</b></span></li>
+                                <li>Pour rejoindre le site, le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data.favoriteArrivalMode]} {transportModeEmoji[data.favoriteArrivalMode]}</b></span></li>
+                                <li>L'impact CO2 de ces déplacements est estimé à <span className="tag is-info"><b>XX kgCO2</b></span></li>
+                                <li>Comparée à hier, la quantité d'arrivées a évolué de {arrivalEvolution >= 0 ? <span className="tag is-success"><b>+{arrivalEvolution}%</b></span> : <span className="tag is-danger"><b>{arrivalEvolution}%</b></span>}</li>
                             </ul>
                         </div>
                         <div className="column">
@@ -167,9 +173,9 @@ const Site = () => {
                     <div className="columns">
                         <div className="column is-4 content">
                             <ul>
-                                <li>Pour quitter le site, le mode de transport favorisé est <span class="tag is-info"><b>{transportModeTranslate[data.favoriteDepartureMode]} {transportModeEmoji[data.favoriteDepartureMode]}</b></span></li>
-                                <li>L'impact CO2 de ces déplacements est estimé à <span class="tag is-info"><b>XX kgCO2</b></span></li>
-                                <li>Comparée à hier, la quantité de départs a évolué de <span class="tag is-success"><b>+XX%</b></span></li>
+                                <li>Pour quitter le site, le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data.favoriteDepartureMode]} {transportModeEmoji[data.favoriteDepartureMode]}</b></span></li>
+                                <li>L'impact CO2 de ces déplacements est estimé à <span className="tag is-info"><b>XX kgCO2</b></span></li>
+                                <li>Comparée à hier, la quantité de départs a évolué de {departureEvolution >= 0 ? <span className="tag is-success"><b>+{departureEvolution}%</b></span> : <span className="tag is-danger"><b>{departureEvolution}%</b></span>}</li>
                             </ul>
                         </div>
                         <div className="column">
@@ -188,62 +194,75 @@ const Site = () => {
                     <div className="columns">
                         <div className="column">
                             <h2 className="subtitle">Zones populaires de départ des trajets se rendant au site</h2>
-                            <GeojsonMap geojsonURL={"/data/sites/" + siteName + "/origin_zones.geojson"}/>
+                            <GeojsonMap geojsonURL={`/data/sites/${siteName}/${toDATE}/origin_zones.geojson`}/>
                         </div>
                         <div className="column">
                             <h2 className="subtitle">Zones populaires d'arrivée des trajets quittant le site</h2>
-                            <GeojsonMap geojsonURL={"/data/sites/" + siteName + "/destination_zones.geojson"}/>
+                            <GeojsonMap geojsonURL={`/data/sites/${siteName}/${toDATE}/destination_zones.geojson`}/>
                         </div>
-                    </div>
-                    <h2 className="subtitle">Naviger vers un autre site</h2>
-                    <div className="buttons has-addons">
-                        {sites.map(site => <Link key={site} to={"/sites/" + site}><button className={`button ${siteName == site ? "is-info is-selected" : ""}`}>{site}</button></Link>)}
                     </div>
                 </div>
             }
+            <h2 className="subtitle">Naviger vers un autre site</h2>
+            <div className="buttons has-addons">
+                {sites.map(site => <Link key={site} to={"/sites/" + site}><button className={`button ${siteName == site ? "is-info is-selected" : ""}`}>{site}</button></Link>)}
+            </div>
         </section>
     )
 }
 const SitesSection = () => {
+    const toDATE = "2024-03-23"
+    const yesterDATE = "2024-03-22"
     const [popularSites, setPopularSites] = React.useState([])
+    const [yesterdayPopularSites, setYesterdayPopularSites] = React.useState([])
     
     React.useEffect(() => {
         const fetchData = async () => {
-            const _data = await (await fetch("data/sites_popularity.json")).json()
+            const _data = await (await fetch(`data/sites_popularity/${toDATE}.json`)).json()
             console.log(_data)
             setPopularSites(_data)
+            setYesterdayPopularSites(await (await fetch(`data/sites_popularity/${yesterDATE}.json`)).json())
         }
         fetchData()
     }, [])
-
+    const yesterdayPopularSitesNames = yesterdayPopularSites.map(x => x.name)
+    for (let i = 0; i < popularSites.length; i++) {
+        const yesterdayIndex = yesterdayPopularSitesNames.indexOf(popularSites[i].name)
+        popularSites[i].indexDiff = i - yesterdayIndex
+    }
     return (
         <section className="section">
             <div className="container">
                 <h1 className="title">
-                    Vue par sites olympiques
+                    Vue par sites olympiques, le {new Date(toDATE).toLocaleDateString()}
                 </h1>
                 <div className="columns">
                     <div className="column">
                         <h2 className="subtitle">Sites les plus populaires</h2>
                         <div className="content">
                             <ol>
-                                {popularSites.map(x => <li key={x.name}>{x.name}, {x.arrivals} arrivées sur le site, {x.departures} départs depuis le site</li>)}
+                                {popularSites.map(x => <li key={x.name}>
+                                    {x.indexDiff == 0 ? <span className="tag position-tag is-warning">+0</span>
+                                    : x.indexDiff > 0 ? <span className="tag position-tag is-danger">+{x.indexDiff}</span>
+                                    : <span className="tag position-tag is-success">{x.indexDiff}</span>}
+                                    <span><Link to={`/sites/${x.name}`}>{x.name}</Link>, {x.arrivals} arrivées sur le site, {x.departures} départs</span>
+                                </li>)}
                             </ol>
                         </div>
                     </div>
                     <div className="column">
                         <h2 className="subtitle">Mode favorisé par site</h2>
                         <div className="content">
-                            <ol>
+                            <ol style={{"line-height": "25px"}}>
                                 {popularSites.map(x => <li key={x.name}>{x.name}: 🛬 {transportModeEmoji[x.prefered_arrival_mode]}, 🛫 {transportModeEmoji[x.prefered_departure_mode]}</li>)}
                             </ol>
                         </div>
                     </div>
                 </div>
-                <h2 className="subtitle">Choisir un site pour plus de détails</h2>
+                {/* <h2 className="subtitle">Choisir un site pour plus de détails</h2>
                 <div className="buttons has-addons">
                     {sites.map(site => <Link key={site} to={"/sites/" + site}><button className="button">{site}</button></Link>)}
-                </div>
+                </div> */}
                 
             </div>
         </section>
