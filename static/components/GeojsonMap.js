@@ -1,6 +1,6 @@
 const { useEffect, useRef, useState } = React;
 
-const GeojsonMap = ({ geojsonURL, computeMax }) => {
+const GeojsonMap = ({ geojsonURL, geojsonURL2 }) => {
     const mapContainerRef = useRef(null);
     const [map, setMap] = useState(null);
 
@@ -18,10 +18,23 @@ const GeojsonMap = ({ geojsonURL, computeMax }) => {
 
     useEffect(() => {
         if (!map) {
-            const initializedMap = L.map(mapContainerRef.current, { preferCanvas: true }).setView([48.866667, 2.333333], 11);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+            const sombre = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
                 attribution:'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            }).addTo(initializedMap);
+            })
+            const clair = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            })
+            const baseMaps = {
+                "Sombre": sombre,
+                "Clair": clair
+            }
+            let default_basemap = clair
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                default_basemap = sombre
+            }
+            const initializedMap = L.map(mapContainerRef.current, { preferCanvas: true, layers: [default_basemap] }).setView([48.866667, 2.333333], 11);
+            const layerControl = L.control.layers(baseMaps).addTo(initializedMap)
+            initializedMap._layerControl = layerControl
             setMap(initializedMap);
         }
 
@@ -41,6 +54,15 @@ const GeojsonMap = ({ geojsonURL, computeMax }) => {
                     style: f => { return { color: f.properties.stroke || f.properties.fill || f.properties.color, fillColor: f.properties.fill || f.properties.color}; },
                     onEachFeature: onEachFeature
                 }).addTo(map);
+                if (geojsonURL2) {
+                    const geojsonFeature2 = await (await fetch(geojsonURL2)).json();
+                    const content = L.geoJSON(geojsonFeature2, {
+                        style: f => { return { weight: f.properties.Count/10, color: f.properties.stroke || f.properties.fill || f.properties.color, fillColor: f.properties.fill || f.properties.color}; },
+                        onEachFeature: onEachFeature
+                    })
+                    var lgroup = L.layerGroup([content]);
+                    map._layerControl.addOverlay(lgroup, "Lignes")
+                }
             }
         };
 

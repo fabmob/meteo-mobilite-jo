@@ -28,6 +28,9 @@ const NavBar = () => {
                 <Link to="/sites" className="navbar-item">
                     Sites Olympiques
                 </Link>
+                <Link to="/exode" className="navbar-item">
+                    Grands mouvements
+                </Link>
 
                 {/* <div className="navbar-item has-dropdown is-hoverable">
                     <a className="navbar-link">

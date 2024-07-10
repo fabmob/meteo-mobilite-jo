@@ -254,7 +254,7 @@ const SitesSection = () => {
                         <h2 className="subtitle">Mode favorisé par site</h2>
                         <div className="content">
                             <ol style={{"line-height": "25px"}}>
-                                {popularSites.map(x => <li key={x.name}>{x.name}: 🛬 {transportModeEmoji[x.prefered_arrival_mode]}, 🛫 {transportModeEmoji[x.prefered_departure_mode]}</li>)}
+                                {popularSites.map(x => <li key={x.name}>{x.name}: Arrivées {transportModeEmoji[x.prefered_arrival_mode]}, Départs {transportModeEmoji[x.prefered_departure_mode]}</li>)}
                             </ol>
                         </div>
                     </div>
@@ -335,6 +335,25 @@ const GeneralStats = () => {
         </div>
     )
 }
+const Exode = () => {
+    return (
+        <div className="main">
+            <section className="section">
+                <div className="container">
+                    <h1 className="title">
+                        Grands mouvements de population
+                    </h1>
+                    <div className="columns">
+                        <div className="column">
+                            <h2 className="subtitle">Voyageurs quittant paris avant les jeux (rouge = avion, vert = train, orange = voiture, noir=inconnu)</h2>
+                            <GeojsonMap geojsonURL="data/exode.geojson" geojsonURL2="data/exode_lines.geojson"/>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    )
+}
 const Home = () => {
     return (
         <div className="main">
@@ -362,6 +381,7 @@ const Home = () => {
                         <div className="buttons">
                             <Link to="/sites"><button className="button is-primary">Statistiques par site Olympique</button></Link>
                             <Link to="/general"><button className="button is-primary">Statistiques générales</button></Link>
+                            <Link to="/exode"><button className="button is-primary">Grands Mouvements</button></Link>
                         </div>
                         <hr/>
                         <p>Un POC porté par:</p>
@@ -396,6 +416,9 @@ const App = () => {
                 </Route>
                 <Route path="/general">
                     <GeneralStats />
+                </Route>
+                <Route path="/exode">
+                    <Exode />
                 </Route>
                 <Route path="/">
                     <Home />
