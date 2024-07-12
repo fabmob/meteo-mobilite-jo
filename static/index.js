@@ -95,8 +95,8 @@ const sites = [
 ]
 
 const Site = () => {
-    const toDATE = "2024-03-23"
-    const yesterDATE = "2024-03-22"
+    const toDATE = "2024-05-12"
+    const yesterDATE = "2024-05-09"
     const {siteName} = useParams()
     const [data, setData] = React.useState(null)
     const [yesterdayData, setYesterdayData] = React.useState(null)
@@ -127,11 +127,15 @@ const Site = () => {
                     }
                 }
                 setData(_data)
-
-                setYesterdayData(await (await fetch(`/data/sites/${siteName}/${yesterDATE}/modal_share.json`)).json())
             } catch (error) {
                 console.log(siteName, "data couldn't be fetched", error)
                 setData(null)
+            }
+            try {
+                setYesterdayData(await (await fetch(`/data/sites/${siteName}/${yesterDATE}/modal_share.json`)).json())
+            } catch (error) {
+                console.log(siteName, "yesterday data couldn't be fetched", error)
+                setYesterdayData(null)
             }
             
         }
@@ -152,13 +156,13 @@ const Site = () => {
                         <div className="column is-4 content">
                             <ul>
                                 <li>Pour rejoindre le site, le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data.favoriteArrivalMode]} {transportModeEmoji[data.favoriteArrivalMode]}</b></span></li>
-                                <li>L'impact CO2 de ces déplacements est estimé à <span className="tag is-info"><b>XX kgCO2</b></span></li>
+                                <li>L'impact CO2 de ces déplacements est estimé à <span className="tag is-info"><b>{Math.round(data.start.Total_Emission)} kgCO2</b></span></li>
                                 <li>Comparée à hier, la quantité d'arrivées a évolué de {arrivalEvolution >= 0 ? <span className="tag is-success"><b>+{arrivalEvolution}%</b></span> : <span className="tag is-danger"><b>{arrivalEvolution}%</b></span>}</li>
                             </ul>
                         </div>
                         <div className="column">
-                            <h2 className="subtitle is-6">Repartition des {data.end && data.end.Total_Count} trajets</h2>
-                            <PieChart dataJson={data.end_percents_count} labelColorMap={transportModeColorMap} />
+                            <h2 className="subtitle is-6">Modes utilisés lors des {data.end && data.end.Total_Count} voyages</h2>
+                            <BarChart dataJson={data.end.Count} labelColorMap={transportModeColorMap} />
                         </div>
                         <div className="column">
                             <h2 className="subtitle is-6">Repartition des {Math.round(data.end && data.end.Total_Distance)} km totaux parcourus</h2>
@@ -174,13 +178,13 @@ const Site = () => {
                         <div className="column is-4 content">
                             <ul>
                                 <li>Pour quitter le site, le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data.favoriteDepartureMode]} {transportModeEmoji[data.favoriteDepartureMode]}</b></span></li>
-                                <li>L'impact CO2 de ces déplacements est estimé à <span className="tag is-info"><b>XX kgCO2</b></span></li>
+                                <li>L'impact CO2 de ces déplacements est estimé à <span className="tag is-info"><b>{Math.round(data.end.Total_Emission)} kgCO2</b></span></li>
                                 <li>Comparée à hier, la quantité de départs a évolué de {departureEvolution >= 0 ? <span className="tag is-success"><b>+{departureEvolution}%</b></span> : <span className="tag is-danger"><b>{departureEvolution}%</b></span>}</li>
                             </ul>
                         </div>
                         <div className="column">
-                            <h2 className="subtitle is-6">Repartition des {data.start && data.start.Total_Count} trajets</h2>
-                            <PieChart dataJson={data.start_percents_count} labelColorMap={transportModeColorMap}/>
+                            <h2 className="subtitle is-6">Modes utilisés lors des {data.start && data.start.Total_Count} voyages</h2>
+                            <BarChart dataJson={data.start.Count} labelColorMap={transportModeColorMap}/>
                         </div>
                         <div className="column">
                             <h2 className="subtitle is-6">Repartition des {Math.round(data.start && data.start.Total_Distance)} km totaux parcourus</h2>
@@ -211,8 +215,8 @@ const Site = () => {
     )
 }
 const SitesSection = () => {
-    const toDATE = "2024-03-23"
-    const yesterDATE = "2024-03-22"
+    const toDATE = "2024-05-12"
+    const yesterDATE = "2024-05-09"
     const [popularSites, setPopularSites] = React.useState([])
     const [yesterdayPopularSites, setYesterdayPopularSites] = React.useState([])
     
@@ -345,8 +349,14 @@ const Exode = () => {
                     </h1>
                     <div className="columns">
                         <div className="column">
-                            <h2 className="subtitle">Voyageurs quittant paris avant les jeux (rouge = avion, vert = train, orange = voiture, noir=inconnu)</h2>
+                            <h2 className="subtitle">Voyageurs quittant l'ile de france le jeudi 09/05/24 (rouge = avion, vert = train, orange = voiture, noir=inconnu)</h2>
                             <GeojsonMap geojsonURL="data/exode.geojson" geojsonURL2="data/exode_lines.geojson"/>
+                        </div>
+                    </div>
+                    <div className="columns">
+                        <div className="column">
+                            <h2 className="subtitle">Voyageurs revenant en ile de france le dimanche 12/05/24 (rouge = avion, vert = train, orange = voiture, noir=inconnu)</h2>
+                            <GeojsonMap geojsonURL="data/inxode.geojson" geojsonURL2="data/inxode_lines.geojson"/>
                         </div>
                     </div>
                 </div>
