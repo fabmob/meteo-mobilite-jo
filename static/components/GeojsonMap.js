@@ -19,7 +19,7 @@ const transportModeEmoji = {
     "HIGH_SPEED_TRAIN": "🚄"
 }
 
-const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1 }) => {
+const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel = 11 }) => {
     const mapContainerRef = useRef(null);
     const [map, setMap] = useState(null);
 
@@ -30,13 +30,16 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1 }) => {
         if (feature.properties && feature.properties.trace_gps) {
             return layer.bindPopup(feature.properties.trace_gps + " trajets");
         }
-        if (feature.properties && feature.properties.Count) {
+        if (feature.properties && feature.properties.Count && feature.properties.MostCommonTransport) {
             return layer.bindPopup(
                 `
                 Nombre voyages: ${feature.properties.Count}<br/>
                 Mode favori: ${transportModeEmoji[feature.properties.MostCommonTransport]}<br/>
                 `
             )
+        }
+        if (feature.properties && feature.properties.Count) {
+            return layer.bindPopup(`Nombre voyages: ${feature.properties.Count}`)
         }
         if (feature.properties) {
             layer.bindPopup(JSON.stringify(feature.properties));
@@ -59,7 +62,7 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1 }) => {
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 default_basemap = sombre
             }
-            const initializedMap = L.map(mapContainerRef.current, { preferCanvas: true, layers: [default_basemap] }).setView([48.866667, 2.333333], 11);
+            const initializedMap = L.map(mapContainerRef.current, { preferCanvas: true, layers: [default_basemap] }).setView([48.866667, 2.333333], zoomLevel);
             const layerControl = L.control.layers(baseMaps).addTo(initializedMap)
             initializedMap._layerControl = layerControl
             setMap(initializedMap);

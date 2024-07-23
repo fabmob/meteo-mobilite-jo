@@ -198,15 +198,23 @@ const Site = () => {
                     <div className="columns">
                         <div className="column">
                             <h2 className="subtitle">Zones populaires de départ des trajets se rendant au site</h2>
-                            <GeojsonMap geojsonURL={`/data/sites/${siteName}/${toDATE}/origin_zones.geojson`}/>
+                            <GeojsonMap geojsonURL={`/data/sites/${siteName}/${toDATE}/origin_zones.geojson`} zoomLevel="5"/>
+                            <div className="row">
+                                Legende: <span className="tag has-text-dark" style={{"background": "linear-gradient(90deg, rgba(1,255,0,1) 0%, rgba(245,255,0,1) 50%, rgba(255,0,0,1) 100%)"}}>Nombre de trajets</span>
+                            </div>
                         </div>
                         <div className="column">
                             <h2 className="subtitle">Zones populaires d'arrivée des trajets quittant le site</h2>
-                            <GeojsonMap geojsonURL={`/data/sites/${siteName}/${toDATE}/destination_zones.geojson`}/>
+                            <GeojsonMap geojsonURL={`/data/sites/${siteName}/${toDATE}/destination_zones.geojson`} zoomLevel="5"/>
+                            <div className="row">
+                                Legende: <span className="tag has-text-dark" style={{"background": "linear-gradient(90deg, rgba(1,255,0,1) 0%, rgba(245,255,0,1) 50%, rgba(255,0,0,1) 100%)"}}>Nombre de trajets</span>
+                            </div>
                         </div>
                     </div>
+                    
                 </div>
             }
+            <br/>
             <h2 className="subtitle">Naviger vers un autre site</h2>
             <div className="buttons has-addons">
                 {sites.map(site => <Link key={site} to={"/sites/" + site}><button className={`button ${siteName == site ? "is-info is-selected" : ""}`}>{site}</button></Link>)}
@@ -353,7 +361,7 @@ const Exode = () => {
                     <div className="columns">
                         <div className="column">
                             <h2 className="subtitle">Voyageurs quittant l'ile de france le jeudi 09/05/24</h2>
-                            <GeojsonMap geojsonURL="data/exode.geojson" geojsonURL2="data/exode_lines.geojson" minCount={minCount} opacity="0.2"/>
+                            <GeojsonMap geojsonURL="data/exode.geojson" geojsonURL2="data/exode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
                             <div className="row">
                                 Legende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
                             </div>
@@ -362,7 +370,7 @@ const Exode = () => {
                     <div className="columns">
                         <div className="column">
                             <h2 className="subtitle">Voyageurs revenant en ile de france le dimanche 12/05/24</h2>
-                            <GeojsonMap geojsonURL="data/inxode.geojson" geojsonURL2="data/inxode_lines.geojson" minCount={minCount} opacity="0.2"/>
+                            <GeojsonMap geojsonURL="data/inxode.geojson" geojsonURL2="data/inxode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
                             <div className="row">
                                 Legende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
                             </div>
