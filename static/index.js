@@ -156,7 +156,7 @@ const Site = () => {
                         <div className="column is-4 content">
                             <ul>
                                 <li>Pour rejoindre le site, le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data.favoriteArrivalMode]} {transportModeEmoji[data.favoriteArrivalMode]}</b></span></li>
-                                <li>L'impact CO2 de ces déplacements est estimé à <span className="tag is-info"><b>{Math.round(data.start.Total_Emission)} kgCO2</b></span></li>
+                                <li>L'impact CO2 moyen de ces déplacements est estimé à <span className="tag is-info"><b>{(data.start.Total_Emission/data.start.Total_Count).toFixed(2)} kgCO2</b></span></li>
                                 <li>Comparée à hier, la quantité d'arrivées a évolué de {arrivalEvolution >= 0 ? <span className="tag is-success"><b>+{arrivalEvolution}%</b></span> : <span className="tag is-danger"><b>{arrivalEvolution}%</b></span>}</li>
                             </ul>
                         </div>
@@ -178,7 +178,7 @@ const Site = () => {
                         <div className="column is-4 content">
                             <ul>
                                 <li>Pour quitter le site, le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data.favoriteDepartureMode]} {transportModeEmoji[data.favoriteDepartureMode]}</b></span></li>
-                                <li>L'impact CO2 de ces déplacements est estimé à <span className="tag is-info"><b>{Math.round(data.end.Total_Emission)} kgCO2</b></span></li>
+                                <li>L'impact CO2 moyen de ces déplacements est estimé à <span className="tag is-info"><b>{(data.end.Total_Emission/data.end.Total_Count).toFixed(2)} kgCO2</b></span></li>
                                 <li>Comparée à hier, la quantité de départs a évolué de {departureEvolution >= 0 ? <span className="tag is-success"><b>+{departureEvolution}%</b></span> : <span className="tag is-danger"><b>{departureEvolution}%</b></span>}</li>
                             </ul>
                         </div>
@@ -340,6 +340,7 @@ const GeneralStats = () => {
     )
 }
 const Exode = () => {
+    const [minCount, setMinCount] = useState(4)
     return (
         <div className="main">
             <section className="section">
@@ -347,16 +348,28 @@ const Exode = () => {
                     <h1 className="title">
                         Grands mouvements de population
                     </h1>
+                    <p>
+                        Zones affichées à partir de <b>{minCount}</b> voyages, changez ce filtre avec le sélecteur ci-dessous.
+                    </p>
+                    <div>
+                        <input className="input" type="range" min="4" max="100" value={minCount} onChange={e => setMinCount(e.target.value)} />
+                    </div>
                     <div className="columns">
                         <div className="column">
-                            <h2 className="subtitle">Voyageurs quittant l'ile de france le jeudi 09/05/24 (rouge = avion, vert = train, orange = voiture, noir=inconnu)</h2>
-                            <GeojsonMap geojsonURL="data/exode.geojson" geojsonURL2="data/exode_lines.geojson"/>
+                            <h2 className="subtitle">Voyageurs quittant l'ile de france le jeudi 09/05/24</h2>
+                            <GeojsonMap geojsonURL="data/exode.geojson" geojsonURL2="data/exode_lines.geojson" minCount={minCount} opacity="0.2"/>
+                            <div className="row">
+                                Legende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
+                            </div>
                         </div>
                     </div>
                     <div className="columns">
                         <div className="column">
-                            <h2 className="subtitle">Voyageurs revenant en ile de france le dimanche 12/05/24 (rouge = avion, vert = train, orange = voiture, noir=inconnu)</h2>
-                            <GeojsonMap geojsonURL="data/inxode.geojson" geojsonURL2="data/inxode_lines.geojson"/>
+                            <h2 className="subtitle">Voyageurs revenant en ile de france le dimanche 12/05/24</h2>
+                            <GeojsonMap geojsonURL="data/inxode.geojson" geojsonURL2="data/inxode_lines.geojson" minCount={minCount} opacity="0.2"/>
+                            <div className="row">
+                                Legende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -375,26 +388,14 @@ const Home = () => {
                         </h1>
                         <p>Ce projet est une preuve de concept de tableau de bord pour suivre les évolutions de la mobilité jour après jour durant les Jeux olympiques de l'été 2024.</p>
 
-                        <p>Il exploite des données de traces de mobilités et d'open data comme sources. C'est de fait aussi une preuve de concept technique d'indicateurs constructibles à partir de traces de mobilités. Ces dernières sont définies comme un trajet effectué par une personne au sein d'un unique mode de transport. On y retrouve généralement :</p>
-                        <ul>
-                            <li>Un identifiant utilisateur</li>
-                            <li>Le mode de transport utilisé (marche, vélo, bus, voiture personnelle, etc.)</li>
-                            <li>Les dates de départ et d'arrivée</li>
-                            <li>Une série de coordonnées (latitude et longitude), souvent appelée "trace GPS"</li>
-                            <li>(optionnel) la raison du déplacement</li>
-                        </ul>
-                        <p>Parfois, ces données sont assimilables aux données de "Floating Car Data" ou "Floating Cellular Data", avec comme différence l'usage de smartphones comme outil de mesure, permettant une meilleure précision et une meilleure identification du mode de transport.</p>
-
-                        <p>Cette preuve de concept entre dans un ensemble de projets portés par la Fabrique des Mobilités en 2024-2025 autour des traces de mobilités. Consultez <a href="https://wiki.lafabriquedesmobilites.fr/wiki/Programme_%E2%80%9CConnaissance_des_mobilit%C3%A9s%E2%80%9D">ce document</a> pour plus de détails et pour y participer.</p>
-
                         <h2 className="subtitle">Consultez les tableaux de bord:</h2>
                         <div className="buttons">
                             <Link to="/sites"><button className="button is-primary">Statistiques par site Olympique</button></Link>
                             <Link to="/general"><button className="button is-primary">Statistiques générales</button></Link>
                             <Link to="/exode"><button className="button is-primary">Grands Mouvements</button></Link>
                         </div>
-                        <hr/>
-                        <p>Un POC porté par:</p>
+
+                        <h2 className="subtitle">Une preuve de concept portée par:</h2>
                         <div className="columns">
                             <div className="column is-2">
                                 <a href="https://lafabriquedesmobilites.fr" target="_blank">
@@ -407,11 +408,39 @@ const Home = () => {
                                 </a>
                             </div>
                         </div>
+
+                        <h2 className="subtitle">Données sources</h2>
+                        <p>Le projet exploite des données de traces de mobilités et d'open data comme sources. Il est donc aussi une preuve de concept technique d'indicateurs constructibles à partir de traces de mobilités. Ces dernières sont définies comme un trajet effectué par une personne au sein d'un unique mode de transport. On y retrouve généralement :</p>
+                        <ul>
+                            <li>Un identifiant utilisateur</li>
+                            <li>Le mode de transport utilisé (marche, vélo, bus, voiture personnelle, etc.)</li>
+                            <li>Les dates de départ et d'arrivée</li>
+                            <li>Une série de coordonnées (latitude et longitude), souvent appelée "trace GPS"</li>
+                            <li>(optionnel) la raison du déplacement</li>
+                        </ul>
+                        <p>Parfois, ces données sont assimilables aux données de "Floating Car Data" ou "Floating Cellular Data", avec comme différence l'usage de smartphones comme outil de mesure, permettant une meilleure précision et une meilleure identification du mode de transport.</p>
+
+                        <p>Cette preuve de concept entre dans un ensemble de projets portés par la Fabrique des Mobilités en 2024-2025 autour des traces de mobilités. Consultez <a href="https://wiki.lafabriquedesmobilites.fr/wiki/Programme_%E2%80%9CConnaissance_des_mobilit%C3%A9s%E2%80%9D">ce document</a> pour plus de détails et pour y participer.</p>
+
+                        <p><b>Note importante</b>: du fait de leur source (application mobile), les données ne sont naturellement ni exhaustives, ni représentatives de l'ensemble de la population. Elles sont limitées aux utilisateurs de l'application mobile Moovance, une population relativement jeune et technophile. </p>
+                        
                     </div>
                 </div>
             </section>
         </div>
     )   
+}
+const Footer = () => {
+    return (
+        <footer className="footer">
+            <div className="content has-text-centered">
+                <p>
+                    Un site proposé en <a href="https://github.com/fabmob/meteo-mobilite-jo">open source</a> par <a href="https://lafabriquedesmobilites.fr/">la Fabrique des Mobilités</a>, propulsé grace aux données de <a href="https://www.moovance.fr/">Moovance</a>.<br/>
+                    Données sources ni exhaustives, ni représentatives de la population. Limitées aux utilisateurs de l'application Moovance.
+                </p>
+            </div>
+        </footer>
+    )
 }
 const App = () => {
     return (
@@ -434,6 +463,7 @@ const App = () => {
                     <Home />
                 </Route>
             </Switch>
+            <Footer />
         </BrowserRouter>
     )
 }
