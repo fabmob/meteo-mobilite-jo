@@ -2,6 +2,7 @@ const { useEffect, useRef, useState } = React;
 const { Link } = ReactRouterDOM
 
 const NavBar = () => {
+    const [showMobileNavBar, setShowMobileNavBar] = useState(false)
     return (
         <nav className="navbar" role="navigation" aria-label="main navigation">
             <div className="navbar-brand">
@@ -9,15 +10,15 @@ const NavBar = () => {
                     <h1>Meteo de la mobilité pendant les JO</h1>
                 </Link>
 
-                <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
+                <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" onClick={_ => setShowMobileNavBar(!showMobileNavBar)}>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
                 </a>
             </div>
 
-            <div id="navbarBasicExample" className="navbar-menu">
+            <div id="navbarBasicExample" className={"navbar-menu " + (showMobileNavBar ? "is-active" : "")}>
                 <div className="navbar-start">
                 <Link className="navbar-item" to="/">
                     Introduction
