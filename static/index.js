@@ -279,7 +279,7 @@ const GeneralStats = () => {
             <section className="section">
                 <div className="container">
                     <h1 className="title">
-                        La météo de la mobilité pendant les JO (paris intramuros)
+                        Répartition habituelle des déplacements
                     </h1>
                     <div className="columns">
                         <div className="column">
@@ -297,7 +297,7 @@ const GeneralStats = () => {
                     </div>
                     <div className="columns">
                         <div className="column">
-                            <h2 className="subtitle">Part modale GPS M</h2>
+                            <h2 className="subtitle">Part modale Traces</h2>
                             <PieChart dataUrl="data/modal_share_gps.json" labelColorMap={transportModeColorMap}/>
                         </div>
                         <div className="column">
@@ -307,10 +307,6 @@ const GeneralStats = () => {
                         <div className="column">
                             <h2 className="subtitle">Part modale EMG</h2>
                             <PieChart dataUrl="data/modal_share_EMG.json" labelColorMap={transportModeColorMap}/>
-                        </div>
-                        <div className="column">
-                            <h2 className="subtitle">Part modale GPS T</h2>
-                            <PieChart dataUrl="data/modal_share_gps_tracemob.json" labelColorMap={transportModeColorMap}/>
                         </div>
                     </div>
 
