@@ -19,7 +19,7 @@ const transportModeEmoji = {
     "HIGH_SPEED_TRAIN": "🚄"
 }
 
-const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel = 11 }) => {
+const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel = 11, forceHeight, forceColor }) => {
     const mapContainerRef = useRef(null);
     const [map, setMap] = useState(null);
 
@@ -38,8 +38,14 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel 
                 `
             )
         }
+        if (feature.properties && feature.properties.percent) {
+            return layer.bindPopup(`Pourcentage de trajets non-motorisés: ${feature.properties.percent.toFixed(0)}%`)
+        }
         if (feature.properties && feature.properties.Count) {
             return layer.bindPopup(`Nombre voyages: ${feature.properties.Count}`)
+        }
+        if (feature.properties && feature.properties.modal_share_percent_diff) {
+            return layer.bindPopup(`Evolution de la part des trajets non-motorisés: ${feature.properties.modal_share_percent_diff.toFixed(0)}%`)
         }
         if (feature.properties) {
             layer.bindPopup(JSON.stringify(feature.properties));
@@ -88,7 +94,7 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel 
                     }
                 }
                 const firstContent = L.geoJSON(_geojsonData, {
-                    style: f => { return { color: f.properties.stroke || f.properties.fill || f.properties.color, fillColor: f.properties.fill || f.properties.color, opacity: opacity}; },
+                    style: f => { return { color: f.properties.stroke || f.properties.fill || f.properties.color || forceColor, fillColor: f.properties.fill || f.properties.color || forceColor, opacity: opacity}; },
                     onEachFeature: onEachFeature
                 }).addTo(map)
                 // var firstgroup = L.layerGroup([firstContent]).addTo(map)
@@ -133,7 +139,7 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel 
 
     return (
         <div>
-            <div ref={mapContainerRef} id="map"></div>
+            {forceHeight ? <div ref={mapContainerRef} id="map" style={{height: forceHeight}}></div> : <div ref={mapContainerRef} id="map"></div>}
         </div>
     );
 };

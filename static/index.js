@@ -200,14 +200,14 @@ const Site = () => {
                             <h2 className="subtitle">Zones populaires de départ des trajets se rendant au site</h2>
                             <GeojsonMap geojsonURL={`/data/sites/${siteName}/${toDATE}/origin_zones.geojson`} zoomLevel="5"/>
                             <div className="row">
-                                Legende: <span className="tag has-text-dark" style={{"background": "linear-gradient(90deg, rgba(1,255,0,1) 0%, rgba(245,255,0,1) 50%, rgba(255,0,0,1) 100%)"}}>Nombre de trajets</span>
+                                Légende: <span className="tag has-text-dark" style={{"background": "linear-gradient(90deg, rgba(1,255,0,1) 0%, rgba(245,255,0,1) 50%, rgba(255,0,0,1) 100%)"}}>Nombre de trajets</span>
                             </div>
                         </div>
                         <div className="column">
                             <h2 className="subtitle">Zones populaires d'arrivée des trajets quittant le site</h2>
                             <GeojsonMap geojsonURL={`/data/sites/${siteName}/${toDATE}/destination_zones.geojson`} zoomLevel="5"/>
                             <div className="row">
-                                Legende: <span className="tag has-text-dark" style={{"background": "linear-gradient(90deg, rgba(1,255,0,1) 0%, rgba(245,255,0,1) 50%, rgba(255,0,0,1) 100%)"}}>Nombre de trajets</span>
+                                Légende: <span className="tag has-text-dark" style={{"background": "linear-gradient(90deg, rgba(1,255,0,1) 0%, rgba(245,255,0,1) 50%, rgba(255,0,0,1) 100%)"}}>Nombre de trajets</span>
                             </div>
                         </div>
                     </div>
@@ -363,7 +363,7 @@ const Exode = () => {
                             <h2 className="subtitle">Voyageurs quittant l'ile de france le jeudi 09/05/24</h2>
                             <GeojsonMap geojsonURL="data/exode.geojson" geojsonURL2="data/exode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
                             <div className="row">
-                                Legende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
+                                Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
                             </div>
                         </div>
                     </div>
@@ -372,7 +372,7 @@ const Exode = () => {
                             <h2 className="subtitle">Voyageurs revenant en ile de france le dimanche 12/05/24</h2>
                             <GeojsonMap geojsonURL="data/inxode.geojson" geojsonURL2="data/inxode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
                             <div className="row">
-                                Legende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
+                                Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
                             </div>
                         </div>
                     </div>
@@ -394,6 +394,7 @@ const Home = () => {
 
                         <h2 className="subtitle">Consultez les tableaux de bord:</h2>
                         <div className="buttons">
+                            <Link to="/ceremonie_ouverture"><button className="button is-primary">Cérémonie d'ouverture</button></Link>
                             <Link to="/sites"><button className="button is-primary">Statistiques par site Olympique</button></Link>
                             <Link to="/general"><button className="button is-primary">Statistiques générales</button></Link>
                             <Link to="/exode"><button className="button is-primary">Grands Mouvements</button></Link>
@@ -403,12 +404,12 @@ const Home = () => {
                         <div className="columns">
                             <div className="column is-2">
                                 <a href="https://lafabriquedesmobilites.fr" target="_blank">
-                                    <img src="https://lafabriquedesmobilites.fr/images/fabmob_cmjn1.svg" style={{"max-height": "80px"}}></img>
+                                    <img src="https://lafabriquedesmobilites.fr/images/fabmob_cmjn1.svg" style={{"maxHeight": "80px"}}></img>
                                 </a>
                             </div>
                             <div className="column is-2">
                                 <a href="https://www.moovance.fr" target="_blank">
-                                    <img src="/images/Logo_MOOVANCE-02.png" style={{"max-height": "80px"}}></img>
+                                    <img src="/images/Logo_MOOVANCE-02.png" style={{"maxHeight": "80px"}}></img>
                                 </a>
                             </div>
                         </div>
@@ -434,6 +435,112 @@ const Home = () => {
         </div>
     )   
 }
+const CeremonieOuverture = () => {
+    const [data, setData] = React.useState(null)
+    const [zone, setZone] = React.useState("all")
+    // const [yesterdayData, setYesterdayData] = React.useState(null)
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                let _data = await (await fetch(`/data/ceremony/modal_share.json`)).json()
+                console.log(_data)
+                for (const _zone of ["all", "red_zone", "black_zone"]) {
+                    console.log(_zone)
+                    console.log(_data[_zone])
+                    _data[_zone].favoriteMode = ""
+                    let maxVal = 0
+                    for (const mode in _data[_zone].percents_count) {
+                        if (Object.hasOwnProperty.call(_data[_zone].percents_count, mode)) {
+                            const element = _data[_zone].percents_count[mode]
+                            if (element > maxVal) {
+                                maxVal = element
+                                _data[_zone].favoriteMode = mode
+                            }
+                        }
+                    }
+                }
+                setData(_data)
+            } catch (error) {
+                console.log("data couldn't be fetched", error)
+                setData(null)
+            }
+            
+        }
+        fetchData()
+    }, [])
+    const evolution = 0
+
+    return (
+        <div className="main">
+            <section className="section">
+                <div className="container">
+                    <h1 className="title">
+                        Déplacement durant la céremonie d'ouverture JO 2024
+                    </h1>
+                    <h2 className="subtitle">Statistiques générales par zone</h2>
+                    <div className="buttons has-addons">
+                        <button onClick={_ => setZone("all")} className={`button ${zone == "all" ? "is-info is-selected" : ""}`}>Ensemble des données</button>
+                        <button onClick={_ => setZone("red_zone")} className={`button ${zone == "red_zone" ? "is-info is-selected" : ""}`}>Zone rouge</button>
+                        <button onClick={_ => setZone("black_zone")} className={`button ${zone == "black_zone" ? "is-info is-selected" : ""}`}>Zone anti-terroriste</button>
+                    </div>
+                    <div className="columns">
+                        <div className="column content">
+                            <ul>
+                                {zone === "all" && <li>Par défaut, nous considérons <span className="tag is-info">tous les trajets parisiens</span>, sans restriction de zone. Utilisez les boutons ci-dessus pour filtrer sur une zone spécifique.</li>}
+                                {zone === "red_zone" && <li>La <span className="tag is-danger">zone rouge</span> est une zone de circulation interdite pour les véhicules motorisés. Des dérogations sont possibles avec un pass-jeux.</li>}
+                                {zone === "black_zone" && <li>La <span className="tag is-dark">zone antiterroriste</span> est une zone d'accès totalement interdite, sauf exceptions et détenteurs de billets pour la cérémonie.</li>}
+                                <br/>
+                                {data && data[zone] && <li>Notre échantillon: <span className="tag is-info"><b>{data[zone].stats.Total_Users}</b></span> personnes</li>}
+                                {data && data[zone] && <li>Le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data[zone].favoriteMode]} {transportModeEmoji[data[zone].favoriteMode]}</b></span></li>}
+                                {data && data[zone] && <li>L'impact CO2 moyen de ces déplacements est estimé à <span className="tag is-info"><b>{(data[zone].stats.Total_Emission/data[zone].stats.Total_Count).toFixed(2)} kgCO2</b></span></li>}
+                                {data && data[zone] && <li>Comparée à un vendredi classique, la quantité de déplacements a évolué de {evolution >= 0 ? <span className="tag is-success"><b>+{evolution}%</b></span> : <span className="tag is-danger"><b>{evolution}%</b></span>}</li>}
+                            </ul>
+                        </div>
+                        <div className="column">
+                            {zone === "all" && <GeojsonMap geojsonURL="data/zones/paris.geojson" forceHeight="250px" forceColor="rgb(102, 209, 255)"/>}
+                            {zone === "red_zone" && <GeojsonMap geojsonURL="data/zones/ceremony_red.geojson" forceHeight="250px" forceColor="rgb(255, 102, 133)"/>}
+                            {zone === "black_zone" && <GeojsonMap geojsonURL="data/zones/ceremony_silt.geojson" forceHeight="250px" forceColor="rgb(46, 51, 61)"/>}
+                        </div>
+                    </div>
+                    {data && data[zone] && <div className="columns">
+                        <div className="column">
+                            <h2 className="subtitle is-6">Modes utilisés lors des {data[zone].stats.Total_Count} voyages</h2>
+                            <BarChart dataJson={data[zone].stats.Count} labelColorMap={transportModeColorMap} />
+                        </div>
+                        <div className="column">
+                            <h2 className="subtitle is-6">Repartition des {Math.round(data[zone].stats.Total_Distance)} km totaux parcourus</h2>
+                            <PieChart dataJson={data[zone].percents_distance} labelColorMap={transportModeColorMap}/>
+                        </div>
+                        <div className="column">
+                            <h2 className="subtitle is-6">Repartition des {Math.round(data[zone].stats.Total_Duration/60/60)}h totales de voyage</h2>
+                            <PieChart dataJson={data[zone].percents_duration} labelColorMap={transportModeColorMap}/>
+                        </div>
+                    </div>
+                    }
+                    <hr />
+                    <div className="columns">
+                        <div className="column">
+                            <h2 className="subtitle">Mode de transport favorisé le jour de la cérémonie</h2>
+                            <GeojsonMap geojsonURL="data/ceremony_h3_modal_share.geojson"/>
+                            <div className="row">
+                                Légende: <span className="tag is-success">100% des trajets sont à vélo ou en marchant</span> <span className="tag is-warning">50% des trajets sont motorisés</span> <span className="tag is-danger">100% des trajets sont motorisés</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="columns">
+                        <div className="column">
+                            <h2 className="subtitle">Évolution des modes de transports favorisés, comparé à un jour normal</h2>
+                            <GeojsonMap geojsonURL="data/ceremony_h3_modal_change.geojson"/>
+                            <div className="row">
+                                Légende: <span className="tag is-success">Trajets nettement moins motorisés qu'habituellement</span> <span className="tag is-light">Peu de changements par rapport à l'habituel</span> <span className="tag is-danger">Trajets nettement plus motorisés qu'habituellement</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    )
+}
 const Footer = () => {
     return (
         <footer className="footer">
@@ -450,6 +557,9 @@ const App = () => {
     return (
         <BrowserRouter>
             <NavBar></NavBar>
+            <div className="notification is-info">
+                Données de démonstration, en attente de la cérémonie d'ouverture.
+            </div>
             <Switch>
                 <Route path="/sites/:siteName">
                     <Site/>
@@ -462,6 +572,9 @@ const App = () => {
                 </Route>
                 <Route path="/exode">
                     <Exode />
+                </Route>
+                <Route path="/ceremonie_ouverture">
+                    <CeremonieOuverture />
                 </Route>
                 <Route path="/">
                     <Home />
