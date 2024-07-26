@@ -403,12 +403,12 @@ const Home = () => {
                         <div className="columns">
                             <div className="column is-2">
                                 <a href="https://lafabriquedesmobilites.fr" target="_blank">
-                                    <img src="https://lafabriquedesmobilites.fr/images/fabmob_cmjn1.svg" style={{"max-height": "57px"}}></img>
+                                    <img src="https://lafabriquedesmobilites.fr/images/fabmob_cmjn1.svg" style={{"max-height": "80px"}}></img>
                                 </a>
                             </div>
                             <div className="column is-2">
                                 <a href="https://www.moovance.fr" target="_blank">
-                                    <img src="https://www.moovance.fr/wp-content/uploads/2022/11/logo_moovance_blanc_300_57_px_site_web.png" style={{"max-height": "57px"}}></img>
+                                    <img src="/images/Logo_MOOVANCE-02.png" style={{"max-height": "80px"}}></img>
                                 </a>
                             </div>
                         </div>
