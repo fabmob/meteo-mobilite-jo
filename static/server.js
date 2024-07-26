@@ -4,6 +4,7 @@ const server = express();
 
 server.use('/data', express.static('data'));
 server.use('/components', express.static('components'));
+server.use('/images', express.static('images'));
 
 server.get('/index.js', (_, res) => {
   res.sendFile(__dirname + '/index.js');
