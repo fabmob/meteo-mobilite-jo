@@ -521,16 +521,16 @@ const CeremonieOuverture = () => {
                     <div className="columns">
                         <div className="column">
                             <h2 className="subtitle">Mode de transport favorisé le jour de la cérémonie</h2>
-                            <GeojsonMap geojsonURL="data/ceremony_h3_modal_share.geojson"/>
+                            <GeojsonMap geojsonURL="data/ceremony_h3_modal_share_tc_in_clean.geojson"/>
                             <div className="row">
-                                Légende: <span className="tag is-success">100% des trajets sont à vélo ou en marchant</span> <span className="tag is-warning">50% des trajets sont motorisés</span> <span className="tag is-danger">100% des trajets sont motorisés</span>
+                                Légende: <span className="tag is-success">0% des trajets sont en voiture ou moto</span> <span className="tag is-warning">50% des trajets sont motorisés</span> <span className="tag is-danger">100% des trajets sont motorisés</span>
                             </div>
                         </div>
                     </div>
                     <div className="columns">
                         <div className="column">
                             <h2 className="subtitle">Évolution des modes de transports favorisés, comparé à un jour normal</h2>
-                            <GeojsonMap geojsonURL="data/ceremony_h3_modal_change.geojson"/>
+                            <GeojsonMap geojsonURL="data/ceremony_h3_modal_change_tc_in_clean.geojson"/>
                             <div className="row">
                                 Légende: <span className="tag is-success">Trajets nettement moins motorisés qu'habituellement</span> <span className="tag is-light">Peu de changements par rapport à l'habituel</span> <span className="tag is-danger">Trajets nettement plus motorisés qu'habituellement</span>
                             </div>
@@ -557,9 +557,6 @@ const App = () => {
     return (
         <BrowserRouter>
             <NavBar></NavBar>
-            <div className="notification is-info">
-                Données de démonstration, en attente de la cérémonie d'ouverture.
-            </div>
             <Switch>
                 <Route path="/sites/:siteName">
                     <Site/>
