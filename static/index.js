@@ -427,7 +427,7 @@ const Home = () => {
                         <div className="buttons">
                             <Link to="/ceremonie_ouverture"><button className="button is-primary">Cérémonie d'ouverture</button></Link>
                             <Link to="/sites"><button className="button is-primary">Statistiques par site Olympique</button></Link>
-                            <Link to="/general"><button className="button is-primary">Statistiques générales</button></Link>
+                            {/* <Link to="/general"><button className="button is-primary">Statistiques générales</button></Link> */}
                             <Link to="/exode"><button className="button is-primary">Grands Mouvements</button></Link>
                         </div>
 

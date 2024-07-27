@@ -26,9 +26,9 @@ const NavBar = () => {
                 <Link to="/ceremonie_ouverture" className="navbar-item">
                     Cérémonie d'ouverture
                 </Link>
-                <Link to="/general" className="navbar-item">
+                {/* <Link to="/general" className="navbar-item">
                     Statistiques générales
-                </Link>
+                </Link> */}
                 <Link to="/sites" className="navbar-item">
                     Sites Olympiques
                 </Link>
