@@ -95,8 +95,8 @@ const sites = [
 ]
 
 const Site = () => {
-    const toDATE = "2024-05-12"
-    const yesterDATE = "2024-05-09"
+    const toDATE = "2024-07-26"
+    const yesterDATE = "2024-05-12"
     const {siteName} = useParams()
     const [data, setData] = React.useState(null)
     const [yesterdayData, setYesterdayData] = React.useState(null)
@@ -157,7 +157,7 @@ const Site = () => {
                             <ul>
                                 <li>Pour rejoindre le site, le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data.favoriteArrivalMode]} {transportModeEmoji[data.favoriteArrivalMode]}</b></span></li>
                                 <li>L'impact CO2 moyen de ces déplacements est estimé à <span className="tag is-info"><b>{(data.start.Total_Emission/data.start.Total_Count).toFixed(2)} kgCO2</b></span></li>
-                                <li>Comparée à hier, la quantité d'arrivées a évolué de {arrivalEvolution >= 0 ? <span className="tag is-success"><b>+{arrivalEvolution}%</b></span> : <span className="tag is-danger"><b>{arrivalEvolution}%</b></span>}</li>
+                                <li>Comparée à habituellement, la quantité d'arrivées a évolué de {arrivalEvolution >= 0 ? <span className="tag is-success"><b>+{arrivalEvolution}%</b></span> : <span className="tag is-danger"><b>{arrivalEvolution}%</b></span>}</li>
                             </ul>
                         </div>
                         <div className="column">
@@ -179,7 +179,7 @@ const Site = () => {
                             <ul>
                                 <li>Pour quitter le site, le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data.favoriteDepartureMode]} {transportModeEmoji[data.favoriteDepartureMode]}</b></span></li>
                                 <li>L'impact CO2 moyen de ces déplacements est estimé à <span className="tag is-info"><b>{(data.end.Total_Emission/data.end.Total_Count).toFixed(2)} kgCO2</b></span></li>
-                                <li>Comparée à hier, la quantité de départs a évolué de {departureEvolution >= 0 ? <span className="tag is-success"><b>+{departureEvolution}%</b></span> : <span className="tag is-danger"><b>{departureEvolution}%</b></span>}</li>
+                                <li>Comparée à habituellement, la quantité de départs a évolué de {departureEvolution >= 0 ? <span className="tag is-success"><b>+{departureEvolution}%</b></span> : <span className="tag is-danger"><b>{departureEvolution}%</b></span>}</li>
                             </ul>
                         </div>
                         <div className="column">
@@ -223,8 +223,8 @@ const Site = () => {
     )
 }
 const SitesSection = () => {
-    const toDATE = "2024-05-12"
-    const yesterDATE = "2024-05-09"
+    const toDATE = "2024-07-26"
+    const yesterDATE = "2024-05-12"
     const [popularSites, setPopularSites] = React.useState([])
     const [yesterdayPopularSites, setYesterdayPopularSites] = React.useState([])
     
@@ -265,7 +265,7 @@ const SitesSection = () => {
                     <div className="column">
                         <h2 className="subtitle">Mode favorisé par site</h2>
                         <div className="content">
-                            <ol style={{"line-height": "25px"}}>
+                            <ol style={{"lineHeight": "25px"}}>
                                 {popularSites.map(x => <li key={x.name}>{x.name}: Arrivées {transportModeEmoji[x.prefered_arrival_mode]}, Départs {transportModeEmoji[x.prefered_departure_mode]}</li>)}
                             </ol>
                         </div>
@@ -360,8 +360,32 @@ const Exode = () => {
                     </div>
                     <div className="columns">
                         <div className="column">
-                            <h2 className="subtitle">Voyageurs quittant l'ile de france le jeudi 09/05/24</h2>
+                            <h2 className="subtitle">Voyageurs quittant l'Île-de-france le vendredi 27/07/24</h2>
+                            <GeojsonMap geojsonURL="data/26_exode.geojson" geojsonURL2="data/26_exode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
+                            <div className="row">
+                                Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
+                            </div>
+                        </div>
+                        <div className="column">
+                            <h2 className="subtitle">Voyageurs arrivants en Île-de-france le vendredi 27/07/24</h2>
+                            <GeojsonMap geojsonURL="data/26_inxode.geojson" geojsonURL2="data/26_inxode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
+                            <div className="row">
+                                Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
+                            </div>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div className="columns">
+                        <div className="column">
+                            <h2 className="subtitle">Voyageurs quittant l'Île-de-france le jeudi 09/05/24</h2>
                             <GeojsonMap geojsonURL="data/exode.geojson" geojsonURL2="data/exode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
+                            <div className="row">
+                                Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
+                            </div>
+                        </div>
+                        <div className="column">
+                            <h2 className="subtitle">Voyageurs revenant en Île-de-france le dimanche 12/05/24</h2>
+                            <GeojsonMap geojsonURL="data/inxode.geojson" geojsonURL2="data/inxode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
                             <div className="row">
                                 Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
                             </div>
@@ -369,8 +393,15 @@ const Exode = () => {
                     </div>
                     <div className="columns">
                         <div className="column">
-                            <h2 className="subtitle">Voyageurs revenant en ile de france le dimanche 12/05/24</h2>
-                            <GeojsonMap geojsonURL="data/inxode.geojson" geojsonURL2="data/inxode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
+                            <h2 className="subtitle">Voyageurs quittant l'Île-de-france le jeudi 09/05/24</h2>
+                            <GeojsonMap geojsonURL="data/03_exode.geojson" geojsonURL2="data/03_exode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
+                            <div className="row">
+                                Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
+                            </div>
+                        </div>
+                        <div className="column">
+                            <h2 className="subtitle">Voyageurs revenant en Île-de-france le dimanche 12/05/24</h2>
+                            <GeojsonMap geojsonURL="data/03_inxode.geojson" geojsonURL2="data/03_inxode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
                             <div className="row">
                                 Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
                             </div>
