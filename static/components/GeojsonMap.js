@@ -121,11 +121,13 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel 
         };
 
         fetchDataAndAddToMap();
+        
 
         return () => {
             // Clear the map of geoJSON layers before adding new ones
             if (map) {
-                map._layerControl.removeLayer(map.firstgroup)
+                if (map.firstgroup)
+                    map._layerControl.removeLayer(map.firstgroup)
                 if (map.secondgroup)
                     map._layerControl.removeLayer(map.secondgroup)
                 map.eachLayer(layer => {
