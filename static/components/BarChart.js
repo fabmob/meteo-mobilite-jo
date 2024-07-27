@@ -1,7 +1,25 @@
 const BarChart = ({ dataJson, dataUrl, dataKey, labelColorMap }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
-
+  const transportModeTranslation = {
+    "NOT_DEFINED": "Non défini",
+    "UNKNOWN": "Inconnu",
+    "PASSENGER_CAR": "Voiture",
+    "MOTORCYCLE": "Moto",
+    "HEAVY_DUTY_VEHICLE": "Camion",
+    "BUS": "Bus",
+    "COACH": "Navette",
+    "RAIL_TRIP": "Train/Métro",
+    "BOAT_TRIP": "Vateau",
+    "BIKE_TRIP": "Vélo",
+    "PLANE": "Avion",
+    "SKI": "Ski",
+    "FOOT": "Marche",
+    "IDLE": "Inactif",
+    "OTHER": "Autre",
+    "SCOOTER": "Trotinette",
+    "HIGH_SPEED_TRAIN": "TGV"
+  }
   useEffect(() => {
     const fetchDataAndUpdateChart = async () => {
       if (chartRef.current) {
@@ -20,7 +38,7 @@ const BarChart = ({ dataJson, dataUrl, dataKey, labelColorMap }) => {
         }
 
         const chartData = {
-          labels: Object.keys(data),
+          labels: Object.keys(data).map(x=>transportModeTranslation[x] || x),
           datasets: [{
             label: 'Voyages',
             data: Object.values(data),

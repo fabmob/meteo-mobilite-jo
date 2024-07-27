@@ -1,7 +1,25 @@
 const StackedBarChart = ({ dataUrl, labelColorMap }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
-
+  const transportModeTranslation = {
+    "NOT_DEFINED": "Non défini",
+    "UNKNOWN": "Inconnu",
+    "PASSENGER_CAR": "Voiture",
+    "MOTORCYCLE": "Moto",
+    "HEAVY_DUTY_VEHICLE": "Camion",
+    "BUS": "Bus",
+    "COACH": "Navette",
+    "RAIL_TRIP": "Train/Métro",
+    "BOAT_TRIP": "Vateau",
+    "BIKE_TRIP": "Vélo",
+    "PLANE": "Avion",
+    "SKI": "Ski",
+    "FOOT": "Marche",
+    "IDLE": "Inactif",
+    "OTHER": "Autre",
+    "SCOOTER": "Trotinette",
+    "HIGH_SPEED_TRAIN": "TGV"
+  }
   useEffect(() => {
     const fetchDataAndUpdateChart = async () => {
       if (chartRef.current) {
@@ -20,7 +38,7 @@ const StackedBarChart = ({ dataUrl, labelColorMap }) => {
           labels: data.labels.slice(nb_labels_after_midnight).concat(data.labels.slice(0, nb_labels_after_midnight)),
           datasets: data.datasets.map(dataset => {
             return {
-              label: dataset.label,
+              label: transportModeTranslation[dataset.label],
               data: dataset.data.slice(nb_labels_after_midnight).concat(dataset.data.slice(0, nb_labels_after_midnight)),
               backgroundColor: labelColorMap ? labelColorMap[dataset.label] : undefined
             }
