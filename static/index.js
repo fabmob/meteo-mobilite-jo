@@ -231,7 +231,6 @@ const SitesSection = () => {
     React.useEffect(() => {
         const fetchData = async () => {
             const _data = await (await fetch(`data/sites_popularity/${toDATE}.json`)).json()
-            console.log(_data)
             setPopularSites(_data)
             setYesterdayPopularSites(await (await fetch(`data/sites_popularity/${yesterDATE}.json`)).json())
         }
@@ -458,10 +457,7 @@ const CeremonieOuverture = () => {
         const fetchData = async () => {
             try {
                 let _data = await (await fetch(`/data/ceremony/modal_share.json`)).json()
-                console.log(_data)
                 for (const _zone of ["all", "red_zone", "black_zone"]) {
-                    console.log(_zone)
-                    console.log(_data[_zone])
                     _data[_zone].favoriteMode = ""
                     let maxVal = 0
                     for (const mode in _data[_zone].percents_count) {
@@ -635,5 +631,6 @@ const App = () => {
     )
 }
 
-const domContainer = document.getElementById('root');
-ReactDOM.render(<App />, domContainer);
+const container = document.getElementById('root')
+const root = ReactDOM.createRoot(container)
+root.render(<App />)
