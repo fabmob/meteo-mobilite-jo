@@ -477,7 +477,7 @@ const CeremonieOuverture = () => {
                     <h1 className="title">
                         Déplacement durant la céremonie d'ouverture JO 2024
                     </h1>
-                    <h2 className="subtitle">Statistiques générales par zone</h2>
+                    <h2 className="subtitle">Statistiques générales des voyages commençants ou arrivants dans une zone</h2>
                     <div className="buttons has-addons">
                         <button onClick={_ => setZone("all")} className={`button ${zone == "all" ? "is-info is-selected" : ""}`}>Ensemble des données</button>
                         <button onClick={_ => setZone("red_zone")} className={`button ${zone == "red_zone" ? "is-info is-selected" : ""}`}>Zone rouge</button>
@@ -486,7 +486,7 @@ const CeremonieOuverture = () => {
                     <div className="columns">
                         <div className="column content">
                             <ul>
-                                {zone === "all" && <li>Par défaut, nous considérons <span className="tag is-info">tous les trajets parisiens</span>, sans restriction de zone. Utilisez les boutons ci-dessus pour filtrer sur une zone spécifique.</li>}
+                                {zone === "all" && <li>Par défaut, nous considérons <span className="tag is-info">tous les trajets parisiens</span>. Utilisez les boutons ci-dessus pour filtrer sur une zone spécifique.</li>}
                                 {zone === "red_zone" && <li>La <span className="tag is-danger">zone rouge</span> est une zone de circulation interdite pour les véhicules motorisés. Des dérogations sont possibles avec un pass-jeux.</li>}
                                 {zone === "black_zone" && <li>La <span className="tag is-dark">zone antiterroriste</span> est une zone d'accès totalement interdite, sauf exceptions et détenteurs de billets pour la cérémonie.</li>}
                                 <br/>
@@ -506,6 +506,7 @@ const CeremonieOuverture = () => {
                         <div className="column">
                             <h2 className="subtitle is-6">Modes utilisés lors des {data[zone].stats.Total_Count} voyages</h2>
                             <BarChart dataJson={data[zone].stats.Count} labelColorMap={transportModeColorMap} />
+                            <p style={{"marginTop": "-50px", "fontSize": "12px"}}><i>Note: un voyage peut contenir plusieurs modes de transport</i></p>
                         </div>
                         <div className="column">
                             <h2 className="subtitle is-6">Repartition des {Math.round(data[zone].stats.Total_Distance)} km totaux parcourus</h2>
@@ -517,6 +518,43 @@ const CeremonieOuverture = () => {
                         </div>
                     </div>
                     }
+                    {zone === "all" && <div className="columns">
+                        <div className="column">
+                            <h2 className="subtitle is-6">Déplacements par quart d'heure</h2>
+                            <StackedBarChart dataUrl="data/ceremony/trips_per_15_min.json" labelColorMap={transportModeColorMap} />
+                        </div>
+                    </div>}
+                    {zone === "black_zone" && <div className="columns">
+                        <div className="column">
+                            <h2 className="subtitle is-6">Arrivées dans la zone</h2>
+                            <StackedBarChart dataUrl="data/ceremony/black_zone_entry.json" labelColorMap={transportModeColorMap} />
+                        </div>
+                        <div className="column">
+                            <h2 className="subtitle is-6">Départs de la zone</h2>
+                            <StackedBarChart dataUrl="data/ceremony/black_zone_exits.json" labelColorMap={transportModeColorMap} />
+                        </div>
+                    </div>}
+                    {zone === "red_zone" && <div className="columns">
+                        <div className="column">
+                            <h2 className="subtitle is-6">Arrivées dans la zone</h2>
+                            <StackedBarChart dataUrl="data/ceremony/red_zone_entry.json" labelColorMap={transportModeColorMap} />
+                        </div>
+                        <div className="column">
+                            <h2 className="subtitle is-6">Départs de la zone</h2>
+                            <StackedBarChart dataUrl="data/ceremony/red_zone_exits.json" labelColorMap={transportModeColorMap} />
+                        </div>
+                    </div>}
+                    <div className="content">
+                        <p>Rappel des moments forts de la cérémonie:</p>
+                        <ul>
+                            <li>17h30: les visiteurs sont arrivés dans les zones et patientent dans les files d'attente</li>
+                            <li>19h30: la cérémonie commence</li>
+                            <li>21h45: passage du bateau français, fin du défilé des athlètes</li>
+                            <li>22h30: la cérémonie s'enchaîne au Trocadéro</li>
+                            <li>23h15: la vasque olympique est allumée </li>
+                            <li>23h30: fin de cérémonie</li>
+                        </ul>
+                    </div>
                     <hr />
                     <div className="columns">
                         <div className="column">
