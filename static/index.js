@@ -537,7 +537,7 @@ const CeremonieOuverture = () => {
                         <div className="column">
                             <h2 className="subtitle is-6">Modes utilisés lors des {data[zone].stats.Total_Count} voyages</h2>
                             <BarChart dataJson={data[zone].stats.Count} labelColorMap={transportModeColorMap} />
-                            <p style={{"marginTop": "-50px", "fontSize": "12px"}}><i>Note: un voyage peut contenir plusieurs modes de transport</i></p>
+                            <p style={{"marginTop": "-30px", "fontSize": "12px"}}><i>Note: un voyage peut contenir plusieurs modes de transport</i></p>
                         </div>
                         <div className="column">
                             <h2 className="subtitle is-6">Repartition des {Math.round(data[zone].stats.Total_Distance)} km totaux parcourus</h2>
