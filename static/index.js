@@ -524,7 +524,7 @@ const CeremonieOuverture = () => {
                                 {data && data[zone] && <li>Notre échantillon: <span className="tag is-info"><b>{data[zone].stats.Total_Users}</b></span> personnes</li>}
                                 {data && data[zone] && <li>Le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data[zone].favoriteMode]} {transportModeEmoji[data[zone].favoriteMode]}</b></span></li>}
                                 {data && data[zone] && <li>L'impact CO2 moyen de ces déplacements est estimé à <span className="tag is-info"><b>{(data[zone].stats.Total_Emission/data[zone].stats.Total_Count).toFixed(2)} kgCO2</b></span></li>}
-                                {data && data[zone] && <li>Comparée à un vendredi classique, la quantité de déplacements a évolué de {evolution >= 0 ? <span className="tag is-success"><b>+{evolution}%</b></span> : <span className="tag is-danger"><b>{evolution}%</b></span>}</li>}
+                                {/* {data && data[zone] && <li>Comparée à un vendredi classique, la quantité de déplacements a évolué de {evolution >= 0 ? <span className="tag is-success"><b>+{evolution}%</b></span> : <span className="tag is-danger"><b>{evolution}%</b></span>}</li>} */}
                             </ul>
                         </div>
                         <div className="column">
