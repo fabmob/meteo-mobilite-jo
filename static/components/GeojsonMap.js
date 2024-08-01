@@ -22,6 +22,8 @@ const transportModeEmoji = {
 const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel = 11, forceHeight, forceColor }) => {
     const mapContainerRef = useRef(null);
     const [map, setMap] = useState(null);
+    const [geoJsonSrcData1, setGeoJsonSrcData1] = useState()
+    const [geoJsonSrcData2, setGeoJsonSrcData2] = useState()
 
     function onEachFeature(feature, layer) {
         if (feature.properties && feature.properties.count) {
@@ -81,16 +83,32 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel 
             }
         };
     }, []);
-
     useEffect(() => {
-        const fetchDataAndAddToMap = async () => {
-            if (map) {
-                const geojsonFeature = await (await fetch(geojsonURL)).json();
-                let _geojsonData = geojsonFeature
+        const fetchData = async () => {
+            try {
+                setGeoJsonSrcData1(await (await fetch(geojsonURL)).json())
+            } catch(e) {
+                setGeoJsonSrcData1(null)
+            }
+            if (geojsonURL2) {
+                try {
+                    setGeoJsonSrcData2(await (await fetch(geojsonURL2)).json())
+                } catch(e) {
+                    setGeoJsonSrcData2(null)
+                }
+            }
+        }
+        fetchData()
+    }, [geojsonURL, geojsonURL2])
+    
+    useEffect(() => {
+        const addDataToMap = () => {
+            if (map && geoJsonSrcData1) {
+                let _geojsonData = geoJsonSrcData1
                 if (minCount) {
                     _geojsonData = {
-                        ...geojsonFeature,
-                        features: geojsonFeature.features.filter(x => x.properties.Count >= minCount)
+                        ..._geojsonData,
+                        features: _geojsonData.features.filter(x => x.properties.Count >= minCount)
                     }
                 }
                 const firstContent = L.geoJSON(_geojsonData, {
@@ -100,13 +118,12 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel 
                 // var firstgroup = L.layerGroup([firstContent]).addTo(map)
                 map._layerControl.addOverlay(firstContent, "Zones")
                 map.firstgroup = firstContent
-                if (geojsonURL2) {
-                    const geojsonFeature2 = await (await fetch(geojsonURL2)).json();
-                    let _geojsonData = geojsonFeature2
+                if (geoJsonSrcData2) {
+                    let _geojsonData = geoJsonSrcData2
                     if (minCount) {
                         _geojsonData = {
-                            ...geojsonFeature2,
-                            features: geojsonFeature2.features.filter(x => x.properties.Count >= minCount)
+                            ..._geojsonData,
+                            features: _geojsonData.features.filter(x => x.properties.Count >= minCount)
                         }
                     }
                     const secondContent = L.geoJSON(_geojsonData, {
@@ -120,7 +137,7 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel 
             }
         };
 
-        fetchDataAndAddToMap();
+        addDataToMap();
         
 
         return () => {
@@ -137,7 +154,7 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel 
                 });
             }
         };
-    }, [geojsonURL, map, minCount]);
+    }, [geoJsonSrcData1, geoJsonSrcData2, map, minCount]);
 
     return (
         <div>
