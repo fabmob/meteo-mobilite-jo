@@ -97,7 +97,7 @@ const sites = [
 const Site = () => {
     const {siteName} = useParams()
     const url = new URL(window.location.href)
-    const [toDATE, setToDate] = React.useState(url.searchParams.get("date") || "2024-07-26")
+    const [toDATE, setToDate] = React.useState(url.searchParams.get("date") || "2024-07-31")
 
     const [data, setData] = React.useState(null)
     const [yesterdayData, setYesterdayData] = React.useState(null)
@@ -240,7 +240,7 @@ const Site = () => {
 }
 
 const SitesSection = () => {
-    const [toDATE, setToDate] = React.useState("2024-07-26")
+    const [toDATE, setToDate] = React.useState("2024-07-31")
     const [popularSites, setPopularSites] = React.useState([])
     const [yesterdayPopularSites, setYesterdayPopularSites] = React.useState([])
     
