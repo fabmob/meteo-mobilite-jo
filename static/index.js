@@ -95,9 +95,10 @@ const sites = [
 ]
 
 const Site = () => {
-    const toDATE = "2024-07-26"
-    const yesterDATE = "2024-05-12"
     const {siteName} = useParams()
+    const url = new URL(window.location.href)
+    const [toDATE, setToDate] = React.useState(url.searchParams.get("date") || "2024-07-26")
+
     const [data, setData] = React.useState(null)
     const [yesterdayData, setYesterdayData] = React.useState(null)
     React.useEffect(() => {
@@ -131,25 +132,40 @@ const Site = () => {
                 console.log(siteName, "data couldn't be fetched", error)
                 setData(null)
             }
+
+            let yesterDATE = new Date(toDATE)
+            yesterDATE.setDate(yesterDATE.getDate() - 1)
+            yesterDATE = yesterDATE.toISOString().split("T")[0]
             try {
                 setYesterdayData(await (await fetch(`/data/sites/${siteName}/${yesterDATE}/modal_share.json`)).json())
             } catch (error) {
-                console.log(siteName, "yesterday data couldn't be fetched", error)
-                setYesterdayData(null)
+                console.log(siteName, "yesterday data couldn't be fetched", error, "trying default 2024-05-12")
+                try {
+                    setYesterdayData(await (await fetch(`/data/sites/${siteName}/2024-05-12/modal_share.json`)).json())
+                } catch (error) {
+                    console.log(siteName, "default yesterday data couldn't be fetched either")
+                    setYesterdayData(null)
+                }
             }
             
         }
         fetchData()
-    }, [siteName])
+    }, [siteName, toDATE])
+
+    const setToDateAndParam = (d) => {
+        setToDate(d)
+        url.searchParams.set("date", d)
+        history.pushState({}, '', url.href)
+    }
 
     const arrivalEvolution = (data && yesterdayData) ? Math.round((data.end.Total_Count - yesterdayData.end.Total_Count) / data.end.Total_Count * 100) : 0
     const departureEvolution = (data && yesterdayData) ? Math.round((data.start.Total_Count - yesterdayData.start.Total_Count) / data.start.Total_Count * 100) : 0
     return (
         <section className="section">
             <h1 className="title">
-                {siteName}, le {new Date(toDATE).toLocaleDateString()}
+                {siteName}, le <DateSelector date={toDATE} setDate={setToDateAndParam} />
             </h1>
-            { !data ? <h2 className="subtitle">Pas assez de données disponibles sur ce site</h2> :
+            { !data ? <h2 className="subtitle">Pas assez de données disponibles sur ce site à cette date</h2> :
                 <div>
                     <h2 className="subtitle">Arrivées au site</h2>
                     <div className="columns">
@@ -157,7 +173,7 @@ const Site = () => {
                             <ul>
                                 <li>Pour rejoindre le site, le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data.favoriteArrivalMode]} {transportModeEmoji[data.favoriteArrivalMode]}</b></span></li>
                                 <li>L'impact CO2 moyen de ces déplacements est estimé à <span className="tag is-info"><b>{(data.start.Total_Emission/data.start.Total_Count).toFixed(2)} kgCO2</b></span></li>
-                                <li>Comparée à habituellement, la quantité d'arrivées a évolué de {arrivalEvolution >= 0 ? <span className="tag is-success"><b>+{arrivalEvolution}%</b></span> : <span className="tag is-danger"><b>{arrivalEvolution}%</b></span>}</li>
+                                <li>Comparée à la veille, la quantité d'arrivées a évolué de {arrivalEvolution >= 0 ? <span className="tag is-success"><b>+{arrivalEvolution}%</b></span> : <span className="tag is-danger"><b>{arrivalEvolution}%</b></span>}</li>
                             </ul>
                         </div>
                         <div className="column">
@@ -179,7 +195,7 @@ const Site = () => {
                             <ul>
                                 <li>Pour quitter le site, le mode de transport favorisé est <span className="tag is-info"><b>{transportModeTranslate[data.favoriteDepartureMode]} {transportModeEmoji[data.favoriteDepartureMode]}</b></span></li>
                                 <li>L'impact CO2 moyen de ces déplacements est estimé à <span className="tag is-info"><b>{(data.end.Total_Emission/data.end.Total_Count).toFixed(2)} kgCO2</b></span></li>
-                                <li>Comparée à habituellement, la quantité de départs a évolué de {departureEvolution >= 0 ? <span className="tag is-success"><b>+{departureEvolution}%</b></span> : <span className="tag is-danger"><b>{departureEvolution}%</b></span>}</li>
+                                <li>Comparée à la veille, la quantité de départs a évolué de {departureEvolution >= 0 ? <span className="tag is-success"><b>+{departureEvolution}%</b></span> : <span className="tag is-danger"><b>{departureEvolution}%</b></span>}</li>
                             </ul>
                         </div>
                         <div className="column">
@@ -222,20 +238,38 @@ const Site = () => {
         </section>
     )
 }
+
 const SitesSection = () => {
-    const toDATE = "2024-07-26"
-    const yesterDATE = "2024-05-12"
+    const [toDATE, setToDate] = React.useState("2024-07-26")
     const [popularSites, setPopularSites] = React.useState([])
     const [yesterdayPopularSites, setYesterdayPopularSites] = React.useState([])
     
     React.useEffect(() => {
         const fetchData = async () => {
-            const _data = await (await fetch(`data/sites_popularity/${toDATE}.json`)).json()
-            setPopularSites(_data)
-            setYesterdayPopularSites(await (await fetch(`data/sites_popularity/${yesterDATE}.json`)).json())
+            try {
+                const _data = await (await fetch(`data/sites_popularity/${toDATE}.json`)).json()
+                setPopularSites(_data)
+            } catch(e) {
+                console.log("could not load data at date", toDATE)
+                setPopularSites([])
+            }
+            let yesterDATE = new Date(toDATE)
+            yesterDATE.setDate(yesterDATE.getDate() - 1)
+            yesterDATE = yesterDATE.toISOString().split("T")[0]
+            try {
+                setYesterdayPopularSites(await (await fetch(`data/sites_popularity/${yesterDATE}.json`)).json())
+            } catch(e) {
+                console.log("could not load yesterday data at date", yesterDATE, "trying default 2024-05-12")
+                try {
+                    setYesterdayPopularSites(await (await fetch(`data/sites_popularity/2024-05-12.json`)).json())
+                } catch(e) {
+                    console.log("could not load yesterday data at default date either")
+                    setYesterdayPopularSites([])
+                }
+            }
         }
         fetchData()
-    }, [])
+    }, [toDATE])
     const yesterdayPopularSitesNames = yesterdayPopularSites.map(x => x.name)
     for (let i = 0; i < popularSites.length; i++) {
         const yesterdayIndex = yesterdayPopularSitesNames.indexOf(popularSites[i].name)
@@ -245,9 +279,10 @@ const SitesSection = () => {
         <section className="section">
             <div className="container">
                 <h1 className="title">
-                    Vue par sites olympiques, le {new Date(toDATE).toLocaleDateString()}
+                    Vue par sites olympiques, le <DateSelector date={toDATE} setDate={setToDate} />
                 </h1>
-                <div className="columns">
+                {!popularSites.length ? <h2 className="subtitle">Données non disponibles à cette date</h2>
+                : <div className="columns">
                     <div className="column">
                         <h2 className="subtitle">Sites les plus populaires</h2>
                         <div className="content">
@@ -256,7 +291,7 @@ const SitesSection = () => {
                                     {x.indexDiff == 0 ? <span className="tag position-tag is-warning">+0</span>
                                     : x.indexDiff > 0 ? <span className="tag position-tag is-danger">+{x.indexDiff}</span>
                                     : <span className="tag position-tag is-success">{x.indexDiff}</span>}
-                                    <span><Link to={`/sites/${x.name}`}>{x.name}</Link>, {x.arrivals} arrivées sur le site, {x.departures} départs</span>
+                                    <span><Link to={`/sites/${x.name}/?date=${toDATE}`}>{x.name}</Link>, {x.arrivals} arrivées sur le site, {x.departures} départs</span>
                                 </li>)}
                             </ol>
                         </div>
@@ -270,6 +305,7 @@ const SitesSection = () => {
                         </div>
                     </div>
                 </div>
+                }
                 {/* <h2 className="subtitle">Choisir un site pour plus de détails</h2>
                 <div className="buttons has-addons">
                     {sites.map(site => <Link key={site} to={"/sites/" + site}><button className="button">{site}</button></Link>)}
@@ -344,12 +380,13 @@ const GeneralStats = () => {
 }
 const Exode = () => {
     const [minCount, setMinCount] = useState(4)
+    const [toDATE, setToDate] = React.useState("2024-07-26")
     return (
         <div className="main">
             <section className="section">
                 <div className="container">
                     <h1 className="title">
-                        Grands mouvements de population
+                        Grands mouvements de population, le <DateSelector date={toDATE} setDate={setToDate}/>
                     </h1>
                     <p>
                         Zones affichées à partir de <b>{minCount}</b> voyages, changez ce filtre avec le sélecteur ci-dessous.
@@ -359,15 +396,15 @@ const Exode = () => {
                     </div>
                     <div className="columns">
                         <div className="column">
-                            <h2 className="subtitle">Voyageurs quittant l'Île-de-france le vendredi 26/07/24</h2>
-                            <GeojsonMap geojsonURL="data/26_exode.geojson" geojsonURL2="data/26_exode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
+                            <h2 className="subtitle">Voyageurs quittant l'Île-de-france</h2>
+                            <GeojsonMap geojsonURL={`data/exode/${toDATE}/exode.geojson`} geojsonURL2={`data/exode/${toDATE}/exode_lines.geojson`} minCount={minCount} opacity="0.2" zoomLevel="5"/>
                             <div className="row">
                                 Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
                             </div>
                         </div>
                         <div className="column">
-                            <h2 className="subtitle">Voyageurs arrivants en Île-de-france le vendredi 26/07/24</h2>
-                            <GeojsonMap geojsonURL="data/26_inxode.geojson" geojsonURL2="data/26_inxode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
+                            <h2 className="subtitle">Voyageurs arrivants en Île-de-france</h2>
+                            <GeojsonMap geojsonURL={`data/exode/${toDATE}/inxode.geojson`} geojsonURL2={`data/exode/${toDATE}/inxode_lines.geojson`} minCount={minCount} opacity="0.2" zoomLevel="5"/>
                             <div className="row">
                                 Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
                             </div>
@@ -377,14 +414,14 @@ const Exode = () => {
                     <div className="columns">
                         <div className="column">
                             <h2 className="subtitle">Voyageurs quittant l'Île-de-france le jeudi 09/05/24</h2>
-                            <GeojsonMap geojsonURL="data/exode.geojson" geojsonURL2="data/exode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
+                            <GeojsonMap geojsonURL="data/exode/2024-05-09/exode.geojson" geojsonURL2="data/exode/2024-05-09/exode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
                             <div className="row">
                                 Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
                             </div>
                         </div>
                         <div className="column">
                             <h2 className="subtitle">Voyageurs revenant en Île-de-france le dimanche 12/05/24</h2>
-                            <GeojsonMap geojsonURL="data/inxode.geojson" geojsonURL2="data/inxode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
+                            <GeojsonMap geojsonURL="data/exode/2024-05-12/inxode.geojson" geojsonURL2="data/exode/2024-05-12/inxode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
                             <div className="row">
                                 Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
                             </div>
