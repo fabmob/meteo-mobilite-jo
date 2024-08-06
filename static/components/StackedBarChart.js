@@ -25,17 +25,29 @@ const StackedBarChart = ({ dataUrl, labelColorMap }) => {
       if (chartRef.current) {
         const ctx = chartRef.current.getContext('2d');
         const data = await (await fetch(dataUrl)).json()
+        let labels = data.labels
         // Input is a bit scuffed, with data after midnight put in front instead of after
         // For the sake of speed, this is a hack to put data at the end
         // TODO: this really should be done in backend
         let nb_labels_after_midnight
-        for (nb_labels_after_midnight = 0; nb_labels_after_midnight < data.labels.length; nb_labels_after_midnight++) {
-          if (data.labels[nb_labels_after_midnight] > "03:00") {
+        for (nb_labels_after_midnight = 0; nb_labels_after_midnight < labels.length; nb_labels_after_midnight++) {
+          if (labels[nb_labels_after_midnight] > "08:00") {
             break
           }
         }
+        // Shift labels to UTC + 2
+        labels = labels.map(l => {
+          let spl = l.split(":")
+          let minuteString = spl[1]
+          let hour = parseInt(spl[0])
+          hour = (hour + 2) % 24
+          if (hour < 10) {
+            return "0" + hour.toString() + ":" + minuteString
+          }
+          return hour.toString() + ":" + minuteString
+        })
         const chartData = {
-          labels: data.labels.slice(nb_labels_after_midnight).concat(data.labels.slice(0, nb_labels_after_midnight)),
+          labels: labels.slice(nb_labels_after_midnight).concat(labels.slice(0, nb_labels_after_midnight)),
           datasets: data.datasets.map(dataset => {
             return {
               label: transportModeTranslation[dataset.label],
