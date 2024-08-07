@@ -1,4 +1,4 @@
-const BarChart = ({ dataJson, dataUrl, dataKey, labelColorMap }) => {
+const BarChart = ({ dataJson, dataUrl, dataKey, labelColorMap, label }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const transportModeTranslation = {
@@ -40,9 +40,9 @@ const BarChart = ({ dataJson, dataUrl, dataKey, labelColorMap }) => {
         const chartData = {
           labels: Object.keys(data).map(x=>transportModeTranslation[x] || x),
           datasets: [{
-            label: 'Voyages',
+            label: label ? label : 'Voyages',
             data: Object.values(data),
-            backgroundColor: labelColorMap ? Object.keys(data).map(label => labelColorMap[label]) : undefined
+            backgroundColor: labelColorMap ? Object.keys(data).map(label => labelColorMap[label] || "#E5E5E5") : undefined
           }]
         };
         if (chartInstanceRef.current) {
