@@ -94,6 +94,12 @@ const sites = [
     "Trocadéro",
 ]
 
+const availableColors = ["#B4B4B4", "#969696", "#F0282D", "#FA841E", "#FFB114", "#FFB114", "#E67324", "#0078D0", "#00287F", "#6BDB83", "#980F30", "#FF9196", "#00A651", "#996B4F", "#005A46", "#5ED6FF"]
+const sitesColorMap = {}
+for (let i = 0; i < sites.length; i++) {
+    sitesColorMap[sites[i]] = availableColors[i%availableColors.length]
+}
+
 const Site = () => {
     const {siteName} = useParams()
     const url = new URL(window.location.href)
@@ -101,6 +107,7 @@ const Site = () => {
 
     const [data, setData] = React.useState(null)
     const [yesterdayData, setYesterdayData] = React.useState(null)
+    const [siteBehavior, setSiteBehavior] = React.useState(null)
     React.useEffect(() => {
         const fetchData = async () => {
             try {
@@ -147,6 +154,12 @@ const Site = () => {
                     setYesterdayData(null)
                 }
             }
+            try {
+                setSiteBehavior((await (await fetch(`/data/sites/sites_behavior.json`)).json())[siteName])
+            } catch (error) {
+                console.log(siteName, "sites behavior data couldn't be fetched", error)
+                setSiteBehavior(null)
+            }
             
         }
         fetchData()
@@ -156,6 +169,21 @@ const Site = () => {
         setToDate(d)
         url.searchParams.set("date", d)
         history.pushState({}, '', url.href)
+    }
+
+    const reduceBehaviorDict = (key, ignoredSite) => {
+        let reducedDict = {}
+        for (let site in siteBehavior) {
+            if (Object.hasOwnProperty.call(siteBehavior, site)) {
+                if (site == ignoredSite) continue
+                const siteVal = siteBehavior[site]
+                if (siteVal[key] > 0) {
+                    if (site === "Aucun") site = "Aucun, c'est le premier site visité"
+                    reducedDict[site] = siteVal[key]
+                }
+            }
+        }
+        return reducedDict
     }
 
     const arrivalEvolution = (data && yesterdayData) ? Math.round((data.end.Total_Count - yesterdayData.end.Total_Count) / data.end.Total_Count * 100) : 0
@@ -230,8 +258,51 @@ const Site = () => {
                     
                 </div>
             }
-            <br/>
-            <h2 className="subtitle">Naviger vers un autre site</h2>
+            <hr/>
+            {siteBehavior && <h1 className="title">
+                {siteName}, statistiques générales, sur l'ensemble de la période des jeux
+            </h1>}
+            {siteBehavior && <div>
+                <h2 className="subtitle">Comportement des visiteurs</h2>
+                <div className="columns">
+                    {siteBehavior[siteName] && <div className="column content">
+                        <ul>
+                            <li><span className="tag is-info"><b>{siteBehavior.total_unique_users} visiteurs</b></span> se sont rendus sur le site, totalisant <span className="tag is-info"><b>{siteBehavior.total_unique_journeys} trajets</b></span></li>
+                            <li style={{"listStyleType": "none"}}><ul><li>Les visiteurs sont en moyenne venus <span className="tag is-info"><b>{siteBehavior.average_visits_per_user.toFixed(1)} fois</b></span></li></ul></li>
+                            <li><span className="tag is-info"><b>{Math.round(siteBehavior[siteName].unique_users_who_also_visited * 100 / siteBehavior.total_unique_users)}%</b></span> des visiteurs sont revenus sur le site au moins une fois</li>
+                            <li style={{"listStyleType": "none"}}><ul><li>Ces derniers sont en moyenne venus <span className="tag is-info"><b>{(siteBehavior[siteName].times_this_was_also_visited / siteBehavior[siteName].unique_users_who_also_visited).toFixed(1)} fois</b></span></li></ul></li>
+                            <li>Les voyages se rendant sur site durent en moyenne <span className="tag is-info"><b>{(siteBehavior.mean_trip_duration_seconds/60).toFixed(1)} minutes</b></span></li>
+                            <li>Le mode de transport (hors marche) le plus utilisé est <span className="tag is-info"><b>{transportModeTranslate[siteBehavior.most_common_transport]} {transportModeEmoji[siteBehavior.most_common_transport]}</b></span>, avec <span className="tag is-info"><b>{siteBehavior.most_common_transport_total_unique_journeys} trajets</b></span></li>
+                            <li style={{"listStyleType": "none"}}><ul><li>Les trajets contenant ce mode durent en moyenne <span className="tag is-info"><b>{(siteBehavior.mean_trip_duration_seconds_including_most_common_transport/60).toFixed(1)} minutes</b></span></li></ul></li>
+                            <li style={{"listStyleType": "none"}}><ul><li>Dont <span className="tag is-info"><b>{(siteBehavior.mean_trip_duration_seconds_with_most_common_transport/60).toFixed(1)} minutes</b></span> avec ce mode</li></ul></li>
+                        </ul>
+                    </div>}
+                    <div className="column">
+                        <h2 className="subtitle is-6">Les visiteurs de {siteName} ont aussi visité (nb visiteurs)</h2>
+                        <BarChart dataJson={reduceBehaviorDict("unique_users_who_also_visited", siteName)} labelColorMap={sitesColorMap} label="visiteurs" />
+                    </div>
+                    <div className="column">
+                        <h2 className="subtitle is-6">Les visiteurs de {siteName} ont aussi visité (nb visites)</h2>
+                        <BarChart dataJson={reduceBehaviorDict("times_this_was_also_visited", siteName)} labelColorMap={sitesColorMap} label="visites" />
+                    </div>
+                </div>
+                <h2 className="subtitle">Déplacements avant de se rendre sur le site</h2>
+                <div className="columns">
+                    <div className="column">
+                        <h2 className="subtitle is-6">Dernier site visité avant {siteName}</h2>
+                        <BarChart dataJson={reduceBehaviorDict("times_this_was_the_previous_visited_site")} labelColorMap={sitesColorMap} label="visites" />
+                    </div>
+                    <div className="column">
+                        <h2 className="subtitle is-6">Temps moyen entre les visites</h2>
+                        <BarChart dataJson={reduceBehaviorDict("mean_duration_between_visits_in_hours")} labelColorMap={sitesColorMap} label="heures" />
+                    </div>
+                </div>
+                
+            </div>
+            }
+            
+            <hr/>
+            <h1 className="title">Naviger vers un autre site</h1>
             <div className="buttons has-addons">
                 {sites.map(site => <Link key={site} to={"/sites/" + site}><button className={`button ${siteName == site ? "is-info is-selected" : ""}`}>{site}</button></Link>)}
             </div>
@@ -595,7 +666,7 @@ const CeremonieOuverture = () => {
                     <div className="content">
                         <p>Rappel des moments forts de la cérémonie:</p>
                         <ul>
-                            <li>17h30: les visiteurs sont arrivés dans les zones et patientent dans les files d'attente</li>
+                            <li>18h30: les visiteurs sont arrivés dans les zones et patientent dans les files d'attente</li>
                             <li>19h30: la cérémonie commence</li>
                             <li>21h45: passage du bateau français, fin du défilé des athlètes</li>
                             <li>22h30: la cérémonie s'enchaîne au Trocadéro</li>
