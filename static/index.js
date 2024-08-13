@@ -17,7 +17,8 @@ const transportModeColorMap = {
     "IDLE": "#996B4F", // Bronze
     "OTHER": "#E5E5E5", // Very light gray
     "SCOOTER": "#005A46", // Dark green
-    "HIGH_SPEED_TRAIN": "#5ED6FF" // Light blue
+    "HIGH_SPEED_TRAIN": "#5ED6FF", // Light blue
+    "PT": "#0078D0", // Olympic blue
 }
 const transportModeTranslate = {
     "NOT_DEFINED": "non défini",
@@ -98,6 +99,11 @@ const availableColors = ["#B4B4B4", "#969696", "#F0282D", "#FA841E", "#FFB114", 
 const sitesColorMap = {}
 for (let i = 0; i < sites.length; i++) {
     sitesColorMap[sites[i]] = availableColors[i%availableColors.length]
+}
+const daysofweek = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+const daysColorMap = {}
+for (let i = 0; i < daysofweek.length; i++) {
+    daysColorMap[daysofweek[i]] = availableColors[(i*2)%availableColors.length]
 }
 
 const Site = () => {
@@ -486,6 +492,296 @@ const Exode = () => {
         </div>
     )
 }
+
+const EMG_Compare = () => {
+    const [data, setData] = React.useState(null)
+    const [modalZones, setModalZones] = React.useState("paris_paris")
+    const [multimodalChoice, setMultimodalChoice] = React.useState("rer")
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                let _data = await (await fetch(`/data/emg_compare.json`)).json()
+                setData(await (await fetch(`/data/emg_compare.json`)).json())
+            } catch (error) {
+                console.log("data couldn't be fetched", error)
+                setData(null)
+            }
+        }
+        fetchData()
+    }, [])
+    return (
+        <div className="main">
+            <section className="section">
+                <div className="container">
+                    <h1 className="title">
+                        Comparaison avec les déplacements franciliens habituels (<a href="https://www.institutparisregion.fr/mobilite-et-transports/deplacements/enquete-regionale-sur-la-mobilite-des-franciliens/" target="_blank">EMG 2023</a>)
+                    </h1>
+                    <article className="message is-info">
+                        <div className="message-body content">
+                            <p>Début avril 2024, l'Institut Paris Région a <a href="https://www.institutparisregion.fr/mobilite-et-transports/deplacements/enquete-regionale-sur-la-mobilite-des-franciliens/" target="_blank">publié les résultats de son Enquête Mobilité par GPS (EMG)</a> afin de diversifier la connaissance de la mobilité des Franciliens un an et demi après la fin de la pandémie de Covid-19. Elle complète la traditionnelle Enquête Globale Transport (EGT) menée par l’Autorité organisatrice de la mobilité, Île-de-France Mobilités et cofinancée par l'Etat.</p>
+                            <p>Cette enquête permet de poser des bases de comparaisons pour les données récoltées pendant la période des jeux. Elle permet aussi d'isoler les biais dans nos données, et d'en questionner la qualité.</p>
+                            <p>Cette page est donc différente des autres, avec la présence d'encarts explicatifs, comme celui-ci, pour caractériser les résultats et en tirer des apprentissages.</p>
+                        </div>
+                    </article>
+                </div>
+                <br/>
+                {data && <div className="container">
+                    <h2 className="subtitle">Nombre de déplacements par jour de la semaine</h2>
+                    <article className="message is-small">
+                        <div className="message-body content">
+                            <p>Dans les deux cas, nous retrouvons une chute attendue du nombre de déplacements les weekends. </p>
+                            <p>Pendant les JO, les déplacements sont mieux répartis sur la semaine, avec une augmentation significative le dimanche.</p>
+                            <p>Le 3ème graphique nous donne un ordre de grandeur du nombre de voyages considérés pour nos résultats (plus de 750 000 réalisés par ~17 000 personnes).</p>
+                        </div>
+                    </article>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">EMG (millions)</h3>
+                            <BarChart dataJson={data.nb_journey_days.emg.NbJourney} labelColorMap={daysColorMap} />
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">EMG (%)</h3>
+                            <PieChart dataJson={data.nb_journey_days.emg.percent} labelColorMap={daysColorMap} label="Pourcentage des déplacements"/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">JO</h3>
+                            <BarChart dataJson={data.nb_journey_days.data.NbJourney} labelColorMap={daysColorMap}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">JO (%)</h3>
+                            <PieChart dataJson={data.nb_journey_days.data.percent} labelColorMap={daysColorMap} label="Pourcentage des déplacements"/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Diff (points)</h3>
+                            <BarChart dataJson={data.nb_journey_days.diff} labelColorMap={daysColorMap} label="diff %"/>
+                        </div>
+                    </div>
+
+                    <h2 className="subtitle">Part des individus ne se déplaçant pas par jour de la semaine</h2>
+                    <article className="message is-small">
+                        <div className="message-body content">
+                            <p>Même si les résultats sont similaires aux constats précédents, un premier biais existe : l'EMG cible les franciliens alors que nos données portent sur les déplacements en Île-de-France, qu'ils soient franciliens ou non.</p>
+                            <p>Il faut donc faire des choix dans le comptage des individus, un utilisateur n'étant venu en Île-de-France qu'un weekend ne s'est techniquement pas déplacé en Île-de-France un mardi par exemple.</p>
+                            <p>Pour éviter ces faux positifs, nous limitons la recherche aux individus avec au moins 7 jours de déplacements pendant les jeux. Ce choix augmente la probabilité que l'individu soit resté durant l'ensemble de la période.</p>
+                        </div>
+                    </article>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">EMG (%)</h3>
+                            <BarChart dataJson={data.users_not_moving.emg.percent_users_not_moving} label="pourcent" labelColorMap={daysColorMap} maxAxisVal={50} reverseAxis={false}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">JO (%)</h3>
+                            <BarChart dataJson={data.users_not_moving.data.percent_users_not_moving} label="pourcent" labelColorMap={daysColorMap} maxAxisVal={50} reverseAxis={false}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Diff (points)</h3>
+                            <BarChart dataJson={data.users_not_moving.diff} labelColorMap={daysColorMap} label="diff %" reverseAxis={false}/>
+                        </div>
+                    </div>
+
+                    <h2 className="subtitle">Déplacements par heure de la journée</h2>
+                    <article className="message is-small">
+                        <div className="message-body content">
+                            <p>Les enquêtes classiques, focalisées sur les déplacements réguliers, mettent en avant les trois pics d'activités: matin, midi et un étalement le soir.</p>
+                            <p>Pendant les jeux, qui correspondent aussi aux congés d'été pour certains, ces pics sont moins prononcés, et les déplacements sont plus tardifs.</p>
+                        </div>
+                    </article>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">EMG (%)</h3>
+                            <BarChart dataJson={data.nb_journey_hour.emg.percent} label="pourcent" maxAxisVal={16} reverseAxis={false}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">JO (%)</h3>
+                            <BarChart dataJson={data.nb_journey_hour.data.percent} label="pourcent" maxAxisVal={16} reverseAxis={false}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Diff (points)</h3>
+                            <BarChart dataJson={data.nb_journey_hour.diff} label="diff %" reverseAxis={false}/>
+                        </div>
+                    </div>
+
+                    <h2 className="subtitle">Grandes Moyennes</h2>
+                    <article className="message is-small">
+                        <div className="message-body content">
+                            <p>Pour les mêmes raisons de déplacements moins réguliers, le nombre moyen de déplacements par jour diminue aussi pendant les jeux. Nous avons fait le choix de ne considérer que les jours avec au moins un déplacement.</p>
+                            <p>La durée moyenne de déplacement réduit aussi. Notons que pour ces deux indicateurs, seuls les déplacements commençants et terminant en Île-de-France sont considérés. Il est possible que les enquêtes considèrent aussi les déplacements des franciliens hors Ile-de-France.</p>
+                            <p>Le taux d'occupation des voitures met en avant un autre biais dans la source de nos données. L'application utilisée encourage fortement la pratique du covoiturage, résultant en un taux anormalement haut. Un constat à garder en tête lors de prochaines observation avec une part importante de déplacement en voiture.</p>
+                        </div>
+                    </article>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">EMG</h3>
+                            <ul>
+                                <li>Nombre moyen de déplacements par jour par personne <span className="tag is-info"><b>{data.nb_daily_journey_per_user.emg}</b></span></li>
+                                <li>Durée moyenne de déplacement par personne par jour <span className="tag is-info"><b>{data.avg_daily_traveling_time.emg} minutes</b></span></li>
+                                <li>Taux d'occupation des voitures <span className="tag is-info"><b>{data.occupancy.emg} personnes</b></span></li>
+                            </ul>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">JO</h3>
+                            <ul>
+                                <li>Nombre moyen de déplacements par jour par personne <span className="tag is-info"><b>{data.nb_daily_journey_per_user.data.toFixed(2)}</b></span></li>
+                                <li>Durée moyenne de déplacement par personne par jour <span className="tag is-info"><b>{data.avg_daily_traveling_time.data.toFixed(0)} minutes</b></span></li>
+                                <li>Taux d'occupation des voitures <span className="tag is-info"><b>{data.occupancy.data.toFixed(2)} personnes</b></span></li>
+                            </ul>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Diff</h3>
+                            <ul>
+                                <li>Nombre moyen de déplacements par jour par personne <span className="tag is-info"><b>{(data.nb_daily_journey_per_user.data - data.nb_daily_journey_per_user.emg).toFixed(2)}</b></span></li>
+                                <li>Durée moyenne de déplacement par personne par jour <span className="tag is-info"><b>{(data.avg_daily_traveling_time.data - data.avg_daily_traveling_time.emg).toFixed(0)} minutes</b></span></li>
+                                <li>Taux d'occupation des voitures <span className="tag is-info"><b>+{(data.occupancy.data - data.occupancy.emg).toFixed(2)} personnes</b></span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h2 className="subtitle">Part modales</h2>
+                    <article className="message is-small">
+                        <div className="message-body content">
+                            <p>À l'exception des trajets en grande couronne, ou les petits trajets à pied sont peut-être ignorés dans les enquêtes, la part modale de la voiture est toujours supérieure dans nos données JO.</p>
+                            <p>Ce constat, combiné au très faible taux de déplacement en bus, laisse supposer un problème de détection du mode de déplacement, entre bus et voiture. Avec une partie des trajets voiture qui devraient se retrouver dans la part transport en commun</p>
+                            <p>Dans <a href="https://www.6-t.co/etudes/comment-les-parisien-ne-s-et-les-petit-e-s-couronnais-es-adopteront-leur-mobilite-pendant-les-jeux-olympiques-paris-2024" target="_blank">son étude, le bureau de recherche 6t</a> prédisait une réduction des déplacements en voiture et transports à Paris pendant les jeux, au profit de la mobilité douce.</p>
+                            <p>Lorsqu'elles sont comparées à l'EMG, nos données semblent indiquer le contraire. Mais en observant les différences de comportement entre les mêmes utilisateurs en mai 2024 et durant les jeux (échantillon: ~650 personnes), nous observons:</p>
+                            <ul>
+                                <li>Une augmentation de 11% des déplacements à vélo (plus ou moins conforme à la prédiction 6t).</li>
+                                <li>Une diminution de 18% des déplacements en bus (conforme à la prédiction 6t).</li>
+                                <li>Des taux de déplacements similaires sur les autres modes (le taux de marche n'a donc pas augmenté pendant les jeux, contrairement à la prédiction 6t, de même pour l'utilisation de la voiture, qui n'a pas diminué).</li>
+                            </ul>
+                            <p>Cela confirme en conséquence un biais dans les données, avec une surreprésentation de la voiture comparé aux autres modes. Cela encourage aussi les comparaisons entre périodes avec la même source, plutôt qu'entre des sources différentes.</p>
+                        </div>
+                    </article>
+                    <div className="buttons has-addons">
+                        <button onClick={_ => setModalZones("paris_paris")} className={`button ${modalZones == "paris_paris" ? "is-info is-selected" : ""}`}>{"Paris <-> Paris"}</button>
+                        <button onClick={_ => setModalZones("paris_idf_pc")} className={`button ${modalZones == "paris_idf_pc" ? "is-info is-selected" : ""}`}>{"Paris <-> Petite Couronne"}</button>
+                        <button onClick={_ => setModalZones("paris_idf_gc")} className={`button ${modalZones == "paris_idf_gc" ? "is-info is-selected" : ""}`}>{"Paris <-> Grande Couronne"}</button>
+                        <button onClick={_ => setModalZones("idf_idf_gc")} className={`button ${modalZones == "idf_idf_gc" ? "is-info is-selected" : ""}`}>{"Grande Couronne <-> Grande Couronne"}</button>
+                        <button onClick={_ => setModalZones("idf_idf_pc")} className={`button ${modalZones == "idf_idf_pc" ? "is-info is-selected" : ""}`}>{"Petite Couronne <-> Petite Couronne"}</button>
+                    </div>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">{"EMG (%)"}</h3>
+                            <PieChart dataJson={data.modal_shares.emg[modalZones].percent} labelColorMap={transportModeColorMap}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">{"JO (%)"}</h3>
+                            <PieChart dataJson={data.modal_shares.data[modalZones].percent} labelColorMap={transportModeColorMap}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Diff (points)</h3>
+                            <BarChart dataJson={data.modal_shares.diff[modalZones]} labelColorMap={transportModeColorMap} label="diff %" reverseAxis={false}/>
+                        </div>
+                    </div>
+                                        
+                    <h2 className="subtitle">Durée moyenne des deplacements par mode</h2>
+                    <article className="message is-small">
+                        <div className="message-body content">
+                            <p>Ici, les résultats diffèrent grandement car les enquêtes mesurent le budget-temps journalier moyen par mode de transport, alors que nos données illustrent le temps de trajet moyen par mode. La mesure en budget-temps est un indicateur qui se valorise mieux sur les trajets réguliers du quotidien, il a moins d'intérêt sur les périodes exceptionnelles.</p>
+                            <p>Il n'est pas clair si dans l'EMG, seules les journées où le mode est utilisé sont comptabilisés. Par exemple, une personne prenant le bus une heure, un jour sur deux, a-t-elle un budget-temps d'une heure, ou de 30 minutes ?</p>
+                            <p>De plus, tous les trajets étant par nature multimodaux (avec la marche en début et fin), il n'est pas clair si l'EMG compte la durée porte-à-porte, ou le temps exact passé dans le transport. Nous affichons la différence à titre d'exemple sur nos données.</p>
+                            <p>Ces questions rendent la comparaison difficile. Les seuls constats exploitables résident dans la comparaison entre les modes, avec un temps de marche plus long pendant les jeux que le vélo ou la voiture, ce qui contraire à l'habituel.</p>
+                        </div>
+                    </article>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">EMG (minutes)</h3>
+                            <BarChart dataJson={data.avg_duration_per_mode.emg.duration} labelColorMap={transportModeColorMap} label="minutes" maxAxisVal={60}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">JO trajet complet (minutes)</h3>
+                            <BarChart dataJson={data.avg_duration_per_mode.data.full_journey.journey_duration} labelColorMap={transportModeColorMap} label="minutes" maxAxisVal={60}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">JO mode de transport uniquement (minutes)</h3>
+                            <BarChart dataJson={data.avg_duration_per_mode.data.mode_only.duration} labelColorMap={transportModeColorMap} label="minutes" maxAxisVal={60}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Diff (points)</h3>
+                            <BarChart dataJson={data.avg_duration_per_mode.diff.duration} labelColorMap={transportModeColorMap} label="diff %" reverseAxis={false}/>
+                        </div>
+                    </div>
+
+                    <h2 className="subtitle">Multimodalité des trajets avec du train</h2>
+                    <article className="message is-small">
+                        <div className="message-body content">
+                            <p>Ce dernier indicateur questionne les différents modes utilisés par les franciliens lors de leurs déplacements en train. La marche n'étant pas considérée comme un mode à part entière dans les résultats d'enquête, nous l'ignorons aussi dans les résultats ci-dessous.</p>
+                            <p>Pour que cet indicateur ait de la valeur, les données sources doivent pouvoir différencier entre les différents modes eérrés (métro, tram, train). Cette différenciation est complexe avec des données GPS, rendant les comparaisons difficiles avec l'EMG.</p>
+                            <p>Ces indicateurs mettent à nouveau en avant la sous-représentation des trajets en bus dans nos données. En particulier la confusion de ces derniers avec la voiture. En effet, dans l'EMG, les trajets avec une composante train comprennent 10x plus de trajets avec une part bus que de voiture. Nos données indiquent 20x plus de part voiture que bus.</p>
+                            <p>Une telle différence empêche de tirer une quelconque observation.</p>
+                        </div>
+                    </article>
+                    <div className="buttons has-addons">
+                        <button onClick={_ => setMultimodalChoice("rer")} className={`button ${multimodalChoice == "rer" ? "is-info is-selected" : ""}`}>RER/Train</button>
+                        <button onClick={_ => setMultimodalChoice("metro")} className={`button ${multimodalChoice == "metro" ? "is-info is-selected" : ""}`}>Metro</button>
+                    </div>
+                    {multimodalChoice == "rer" ? <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">EMG Nombre de modes utilisés lors des trajets avec du RER/Train (%)</h3>
+                            <PieChart dataJson={data.multimodal_train_trips.emg.nb_unique_modes_rer.percent} label="Pourcentage des trajets"/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">JO Nombre de modes utilisés lors des trajets ferrés (%)</h3>
+                            <PieChart dataJson={data.multimodal_train_trips.data.nb_unique_modes.percent} label="Pourcentage des trajets"/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Diff (points)</h3>
+                            <BarChart dataJson={data.multimodal_train_trips.diff.nb_unique_modes_rer} label="diff %" reverseAxis={false}/>
+                        </div>
+                    </div>
+                    :
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">EMG Nombre de modes utilisés lors des trajets avec du Metro (%)</h3>
+                            <PieChart dataJson={data.multimodal_train_trips.emg.nb_unique_modes_metro.percent} label="Pourcentage des trajets"/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">JO Nombre de modes utilisés lors des trajets ferrés (%)</h3>
+                            <PieChart dataJson={data.multimodal_train_trips.data.nb_unique_modes.percent} label="Pourcentage des trajets"/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Diff (points)</h3>
+                            <BarChart dataJson={data.multimodal_train_trips.diff.nb_unique_modes_metro} label="diff %" reverseAxis={false}/>
+                        </div>
+                    </div>
+                    }
+
+                    {multimodalChoice == "rer" ? <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">EMG Parts des modes utilisés lors des trajets avec du RER/Train (%)</h3>
+                            <BarChart dataJson={data.multimodal_train_trips.emg.nb_journey_per_modes_rer.percent} labelColorMap={transportModeColorMap} label="part modale" maxAxisVal={100} reverseAxis={false}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">JO Parts des modes utilisés lors des trajets avec du train (%)</h3>
+                            <BarChart dataJson={data.multimodal_train_trips.data.nb_journey_per_modes.percent} labelColorMap={transportModeColorMap} label="part modale" maxAxisVal={100} reverseAxis={false}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Diff (points)</h3>
+                            <BarChart dataJson={data.multimodal_train_trips.diff.nb_journey_per_modes_rer} label="diff %" reverseAxis={false}/>
+                        </div>
+                    </div>
+                    :
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">EMG Parts des modes utilisés lors des trajets avec du Metro (%)</h3>
+                            <BarChart dataJson={data.multimodal_train_trips.emg.nb_journey_per_modes_metro.percent} labelColorMap={transportModeColorMap} label="part modale" maxAxisVal={100} reverseAxis={false}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">JO Parts des modes utilisés lors des trajets avec du train (%)</h3>
+                            <BarChart dataJson={data.multimodal_train_trips.data.nb_journey_per_modes.percent} labelColorMap={transportModeColorMap} label="part modale" maxAxisVal={100} reverseAxis={false}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Diff (points)</h3>
+                            <BarChart dataJson={data.multimodal_train_trips.diff.nb_journey_per_modes_metro} label="diff %" reverseAxis={false}/>
+                        </div>
+                    </div>
+                    }
+                    
+                </div>}
+            </section>
+        </div>
+    )
+}
 const Home = () => {
     return (
         <div className="main">
@@ -706,6 +1002,9 @@ const App = () => {
                 </Route>
                 <Route path="/general">
                     <GeneralStats />
+                </Route>
+                <Route path="/emg_compare">
+                    <EMG_Compare />
                 </Route>
                 <Route path="/exode">
                     <Exode />

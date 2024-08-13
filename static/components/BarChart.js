@@ -1,4 +1,4 @@
-const BarChart = ({ dataJson, dataUrl, dataKey, labelColorMap, label }) => {
+const BarChart = ({ dataJson, dataUrl, dataKey, labelColorMap, label, reverseAxis=true, maxAxisVal }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const transportModeTranslation = {
@@ -18,7 +18,8 @@ const BarChart = ({ dataJson, dataUrl, dataKey, labelColorMap, label }) => {
     "IDLE": "Inactif",
     "OTHER": "Autre",
     "SCOOTER": "Trotinette",
-    "HIGH_SPEED_TRAIN": "TGV"
+    "HIGH_SPEED_TRAIN": "TGV",
+    "PT": "Transport en commun"
   }
   useEffect(() => {
     const fetchDataAndUpdateChart = async () => {
@@ -51,19 +52,28 @@ const BarChart = ({ dataJson, dataUrl, dataKey, labelColorMap, label }) => {
           chartInstanceRef.current.update();
         } else {
           // Create new chart
+          let options = {
+            responsive: true,
+            maintainAspectRatio: true,
+            indexAxis: (reverseAxis ? "y": "x"),
+            plugins: {
+              legend: {
+                display: false,
+              }
+            }
+          }
+          if (maxAxisVal) {
+            options["scales"] = {}
+            const axis = (reverseAxis ? "x": "y")
+            options.scales[axis] = {
+              max: maxAxisVal
+            }
+          }
+          
           chartInstanceRef.current = new Chart(ctx, {
             type: 'bar',
             data: chartData,
-            options: {
-              responsive: true,
-              maintainAspectRatio: true,
-              indexAxis: 'y',
-              plugins: {
-                legend: {
-                  display: false,
-                }
-              }
-            }
+            options: options
           });
         }
       }

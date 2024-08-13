@@ -1,4 +1,4 @@
-const PieChart = ({ dataJson, dataUrl, dataKey, labelColorMap }) => {
+const PieChart = ({ dataJson, dataUrl, dataKey, labelColorMap, label }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const transportModeTranslation = {
@@ -18,7 +18,8 @@ const PieChart = ({ dataJson, dataUrl, dataKey, labelColorMap }) => {
     "IDLE": "Inactif",
     "OTHER": "Autre",
     "SCOOTER": "Trotinette",
-    "HIGH_SPEED_TRAIN": "TGV"
+    "HIGH_SPEED_TRAIN": "TGV",
+    "PT": "Transport en commun"
   }
   useEffect(() => {
     const fetchDataAndUpdateChart = async () => {
@@ -40,7 +41,7 @@ const PieChart = ({ dataJson, dataUrl, dataKey, labelColorMap }) => {
         const chartData = {
           labels: Object.keys(data).map(x=>transportModeTranslation[x] || x),
           datasets: [{
-            label: 'Part modale',
+            label: label || 'Part modale',
             data: Object.values(data).map(x => x * 100),
             backgroundColor: labelColorMap ? Object.keys(data).map(label => labelColorMap[label]) : undefined
           }]
