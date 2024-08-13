@@ -481,23 +481,6 @@ const Exode = () => {
                             </div>
                         </div>
                     </div>
-                    <hr/>
-                    <div className="columns">
-                        <div className="column">
-                            <h2 className="subtitle">Voyageurs quittant l'Île-de-france le jeudi 09/05/24</h2>
-                            <GeojsonMap geojsonURL="data/exode/2024-05-09/exode.geojson" geojsonURL2="data/exode/2024-05-09/exode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
-                            <div className="row">
-                                Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
-                            </div>
-                        </div>
-                        <div className="column">
-                            <h2 className="subtitle">Voyageurs revenant en Île-de-france le dimanche 12/05/24</h2>
-                            <GeojsonMap geojsonURL="data/exode/2024-05-12/inxode.geojson" geojsonURL2="data/exode/2024-05-12/inxode_lines.geojson" minCount={minCount} opacity="0.2" zoomLevel="5"/>
-                            <div className="row">
-                                Légende: <span className="tag is-success">Train</span> <span className="tag is-warning">Voiture</span> <span className="tag is-danger">Avion</span> <span className="tag has-background-dark has-text-white">Inconnu</span>, Epaisseur du trait: nombre de voyages
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </section>
         </div>
