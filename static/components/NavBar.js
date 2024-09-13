@@ -35,6 +35,10 @@ const NavBar = () => {
                 <Link to="/exode" className="navbar-item">
                     Grands mouvements
                 </Link>
+                <Link to="/emg_compare" className="navbar-item">
+                    Comparaison enquête mobilité
+                </Link>
+                
 
                 {/* <div className="navbar-item has-dropdown is-hoverable">
                     <a className="navbar-link">

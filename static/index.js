@@ -799,6 +799,7 @@ const Home = () => {
                             <Link to="/sites"><button className="button is-primary">Statistiques par site Olympique</button></Link>
                             {/* <Link to="/general"><button className="button is-primary">Statistiques générales</button></Link> */}
                             <Link to="/exode"><button className="button is-primary">Grands Mouvements</button></Link>
+                            <Link to="/emg_compare"><button className="button is-primary">Comparaison enquête mobilité</button></Link>
                         </div>
 
                         <h2 className="subtitle">Une preuve de concept portée par:</h2>
