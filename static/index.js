@@ -607,7 +607,7 @@ const EMG_Compare = () => {
                         <div className="message-body content">
                             <p>Pour les mêmes raisons de déplacements moins réguliers, le nombre moyen de déplacements par jour diminue aussi pendant les jeux. Nous avons fait le choix de ne considérer que les jours avec au moins un déplacement.</p>
                             <p>La durée moyenne de déplacement réduit aussi. Notons que pour ces deux indicateurs, seuls les déplacements commençants et terminant en Île-de-France sont considérés. Il est possible que les enquêtes considèrent aussi les déplacements des franciliens hors Ile-de-France.</p>
-                            <p>Le taux d'occupation des voitures met en avant un autre biais dans la source de nos données. L'application utilisée encourage fortement la pratique du covoiturage, résultant en un taux anormalement haut. Un constat à garder en tête lors de prochaines observation avec une part importante de déplacement en voiture.</p>
+                            <p>Le taux d'occupation des voitures met en avant un autre biais dans la source de nos données. L'application utilisée encourage fortement la pratique du covoiturage, résultant en un taux anormalement haut. Un constat à garder en tête lors de prochaines observations avec une part importante de déplacements en voiture.</p>
                         </div>
                     </article>
                     <div className="columns">
@@ -674,13 +674,13 @@ const EMG_Compare = () => {
                         </div>
                     </div>
                                         
-                    <h2 className="subtitle">Durée moyenne des deplacements par mode</h2>
+                    <h2 className="subtitle">Durée moyenne des déplacements par mode</h2>
                     <article className="message is-small">
                         <div className="message-body content">
                             <p>Ici, les résultats diffèrent grandement car les enquêtes mesurent le budget-temps journalier moyen par mode de transport, alors que nos données illustrent le temps de trajet moyen par mode. La mesure en budget-temps est un indicateur qui se valorise mieux sur les trajets réguliers du quotidien, il a moins d'intérêt sur les périodes exceptionnelles.</p>
                             <p>Il n'est pas clair si dans l'EMG, seules les journées où le mode est utilisé sont comptabilisés. Par exemple, une personne prenant le bus une heure, un jour sur deux, a-t-elle un budget-temps d'une heure, ou de 30 minutes ?</p>
                             <p>De plus, tous les trajets étant par nature multimodaux (avec la marche en début et fin), il n'est pas clair si l'EMG compte la durée porte-à-porte, ou le temps exact passé dans le transport. Nous affichons la différence à titre d'exemple sur nos données.</p>
-                            <p>Ces questions rendent la comparaison difficile. Les seuls constats exploitables résident dans la comparaison entre les modes, avec un temps de marche plus long pendant les jeux que le vélo ou la voiture, ce qui contraire à l'habituel.</p>
+                            <p>Ces questions rendent la comparaison difficile. Les seuls constats exploitables résident dans la comparaison entre les modes, avec un temps de marche plus long pendant les jeux que le vélo ou la voiture, ce qui est contraire à l'habituel.</p>
                         </div>
                     </article>
                     <div className="columns">
@@ -706,7 +706,7 @@ const EMG_Compare = () => {
                     <article className="message is-small">
                         <div className="message-body content">
                             <p>Ce dernier indicateur questionne les différents modes utilisés par les franciliens lors de leurs déplacements en train. La marche n'étant pas considérée comme un mode à part entière dans les résultats d'enquête, nous l'ignorons aussi dans les résultats ci-dessous.</p>
-                            <p>Pour que cet indicateur ait de la valeur, les données sources doivent pouvoir différencier entre les différents modes eérrés (métro, tram, train). Cette différenciation est complexe avec des données GPS, rendant les comparaisons difficiles avec l'EMG.</p>
+                            <p>Pour que cet indicateur ait de la valeur, les données sources doivent pouvoir différencier entre les différents modes férrés (métro, tram, train). Cette différenciation est complexe avec des données GPS, rendant les comparaisons difficiles avec l'EMG.</p>
                             <p>Ces indicateurs mettent à nouveau en avant la sous-représentation des trajets en bus dans nos données. En particulier la confusion de ces derniers avec la voiture. En effet, dans l'EMG, les trajets avec une composante train comprennent 10x plus de trajets avec une part bus que de voiture. Nos données indiquent 20x plus de part voiture que bus.</p>
                             <p>Une telle différence empêche de tirer une quelconque observation.</p>
                         </div>
@@ -983,7 +983,7 @@ const Footer = () => {
         <footer className="footer">
             <div className="content has-text-centered">
                 <p>
-                    Un site proposé en <a href="https://github.com/fabmob/meteo-mobilite-jo">open source</a> par <a href="https://lafabriquedesmobilites.fr/">la Fabrique des Mobilités</a>, propulsé grace aux données de <a href="https://www.moovance.fr/">Moovance</a>.<br/>
+                    Un site proposé en <a href="https://github.com/fabmob/meteo-mobilite-jo">open source</a> par <a href="https://lafabriquedesmobilites.fr/">la Fabrique des Mobilités</a>, conçu grâce aux données de <a href="https://www.moovance.fr/">Moovance</a>.<br/>
                     Données sources ni exhaustives, ni représentatives de la population. Limitées aux utilisateurs de l'application Moovance.
                 </p>
             </div>
