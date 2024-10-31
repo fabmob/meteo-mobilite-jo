@@ -19,13 +19,20 @@ const transportModeEmoji = {
     "HIGH_SPEED_TRAIN": "🚄"
 }
 
-const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel = 11, forceHeight, forceColor }) => {
+const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel = 11, centerPoint=[48.866667, 2.333333], forceHeight, forceColor, onZoneClick }) => {
     const mapContainerRef = useRef(null);
     const [map, setMap] = useState(null);
     const [geoJsonSrcData1, setGeoJsonSrcData1] = useState()
     const [geoJsonSrcData2, setGeoJsonSrcData2] = useState()
 
     function onEachFeature(feature, layer) {
+        if (onZoneClick) {
+            layer.on({
+                click: (e) => {
+                    onZoneClick(e.target.feature.properties.h3_07)
+                }
+            })
+        }
         if (feature.properties && feature.properties.count) {
             return layer.bindPopup(feature.properties.count + " passages par jour");
         }
@@ -70,7 +77,7 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel 
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 default_basemap = sombre
             }
-            const initializedMap = L.map(mapContainerRef.current, { preferCanvas: true, layers: [default_basemap] }).setView([48.866667, 2.333333], zoomLevel);
+            const initializedMap = L.map(mapContainerRef.current, { preferCanvas: true, layers: [default_basemap] }).setView(centerPoint, zoomLevel);
             const layerControl = L.control.layers(baseMaps).addTo(initializedMap)
             initializedMap._layerControl = layerControl
             setMap(initializedMap);
@@ -127,7 +134,7 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel 
                         }
                     }
                     const secondContent = L.geoJSON(_geojsonData, {
-                        style: f => { return { weight: f.properties.Count/10, color: f.properties.stroke || f.properties.fill || f.properties.color, fillColor: f.properties.fill || f.properties.color}; },
+                        style: f => { return { weight: Math.min(f.properties.Count/10, 15), color: f.properties.stroke || f.properties.fill || f.properties.color, fillColor: f.properties.fill || f.properties.color}; },
                         onEachFeature: onEachFeature
                     }).addTo(map)
                     // var secondgroup = L.layerGroup([secondContent]).addTo(map)
