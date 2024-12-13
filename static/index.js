@@ -923,6 +923,146 @@ const GrandLyon = () => {
     )
 }
 
+
+const Noisy = () => {
+    const [data, setData] = React.useState(null)
+    const [selectedZone, setSelectedZone] = React.useState(null)
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setData(await (await fetch(`/data/noisy.json`)).json())
+            } catch (error) {
+                console.log("data couldn't be fetched", error)
+                setData(null)
+            }
+        }
+        fetchData()
+    }, [])
+    const zoneClick = (zone) => {
+        console.log("zoneclick", zone)
+        setSelectedZone(zone)
+    }
+    return (
+        <div className="main">
+            <section className="section">
+                <div className="container">
+                    <h1 className="title">
+                        Statistiques à Noisy
+                    </h1>
+                </div>
+                <br/>
+                {data && <div className="container">
+
+                    <article className="message is-small">
+                        <div className="message-body content">
+                            <p>Echantillon: 511 personnes, 2037 déplacements, du 27/07/24 au 08/08/24</p>
+                        </div>
+                    </article>
+                    <h2 className="subtitle">Nombre de déplacements par jour de la semaine</h2>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Noisy</h3>
+                            <BarChart dataJson={data.nb_journey_days.data.NbJourney} labelColorMap={daysColorMap}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Noisy (%)</h3>
+                            <PieChart dataJson={data.nb_journey_days.data.percent} labelColorMap={daysColorMap} label="Pourcentage des déplacements"/>
+                        </div>
+                    </div>
+
+                    <h2 className="subtitle">Part des individus ne se déplaçant pas par jour de la semaine</h2>
+                    <article className="message is-small">
+                        <div className="message-body content">
+                            <p>Pour éviter ces faux positifs, nous limitons la recherche aux individus avec au moins 7 jours de déplacements. Ce choix augmente la probabilité que l'individu soit resté durant l'ensemble de la période.</p>
+                        </div>
+                    </article>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Noisy (%)</h3>
+                            <BarChart dataJson={data.users_not_moving.data.percent_users_not_moving} label="pourcent" labelColorMap={daysColorMap} maxAxisVal={50} reverseAxis={false}/>
+                        </div>
+                    </div>
+
+                    <h2 className="subtitle">Déplacements par heure de la journée</h2>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Noisy (%)</h3>
+                            <BarChart dataJson={data.nb_journey_hour.data.percent} label="pourcent" maxAxisVal={16} reverseAxis={false}/>
+                        </div>
+                    </div>
+
+                    <h2 className="subtitle">Grandes Moyennes</h2>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Noisy</h3>
+                            <ul>
+                                <li>Nombre moyen de déplacements par jour par personne <span className="tag is-info"><b>{data.nb_daily_journey_per_user.data.toFixed(2)}</b></span></li>
+                                <li>Durée moyenne de déplacement par personne par jour <span className="tag is-info"><b>{data.avg_daily_traveling_time.data.toFixed(0)} minutes</b></span></li>
+                                <li>Taux d'occupation des voitures <span className="tag is-info"><b>{data.occupancy.data.toFixed(2)} personnes</b></span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h2 className="subtitle">Part modales</h2>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">{"Marnois <-> Marnois (%)"}</h3>
+                            <PieChart dataJson={data.modal_shares.data["city_city"].percent} labelColorMap={transportModeColorMap}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">{"Marnois <-> Noisy"}</h3>
+                            <PieChart dataJson={data.modal_shares.data["city_metro_area"].percent} labelColorMap={transportModeColorMap}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">{"Noisy <-> Noisy (%)"}</h3>
+                            <PieChart dataJson={data.modal_shares.data["metro_area_metro_area"].percent} labelColorMap={transportModeColorMap}/>
+                        </div>
+                    </div>
+                                        
+                    <h2 className="subtitle">Durée moyenne des deplacements par mode</h2>
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Trajet complet (minutes)</h3>
+                            <BarChart dataJson={data.avg_duration_per_mode.data.full_journey.journey_duration} labelColorMap={transportModeColorMap} label="minutes" maxAxisVal={60}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Mode de transport uniquement (minutes)</h3>
+                            <BarChart dataJson={data.avg_duration_per_mode.data.mode_only.duration} labelColorMap={transportModeColorMap} label="minutes" maxAxisVal={60}/>
+                        </div>
+                    </div>
+
+                    <h2 className="subtitle">Multimodalité des trajets avec du train</h2>                    
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Nombre de modes utilisés lors des trajets ferrés (%)</h3>
+                            <PieChart dataJson={data.multimodal_train_trips.data.nb_unique_modes.percent} label="Pourcentage des trajets"/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Parts des modes utilisés lors des trajets avec du train (%)</h3>
+                            <BarChart dataJson={data.multimodal_train_trips.data.nb_journey_per_modes.percent} labelColorMap={transportModeColorMap} label="part modale" maxAxisVal={100} reverseAxis={false}/>
+                        </div>
+                    </div>
+                    
+                    <h2 className="subtitle">Origines et destinations des voyages</h2>                    
+                    <div className="columns">
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Zones de départs (click pour détails)</h3>
+                            <GeojsonMap geojsonURL={`data/noisy/departures.geojson`} zoomLevel="13" centerPoint={[48.8407276,2.5593141]} onZoneClick={zoneClick}/>
+                        </div>
+                        <div className="column content">
+                            <h3 className="subtitle is-6">Zones d'arrivé des trajets partant de la zone de départ</h3>
+                            {selectedZone && <GeojsonMap geojsonURL={`data/noisy/arrival_${selectedZone}.geojson`} geojsonURL2={`data/noisy/arrival_${selectedZone}_lines.geojson`} opacity="0.2" zoomLevel="13" centerPoint={[48.8407276,2.5593141]}/>}
+                        </div>
+                    </div>
+                    
+
+                    
+                </div>}
+            </section>
+        </div>
+    )
+}
+
 const Home = () => {
     return (
         <div className="main">
@@ -1156,6 +1296,9 @@ const App = () => {
                 </Route>
                 <Route path="/lyon">
                     <GrandLyon />
+                </Route>
+                <Route path="/noisy">
+                    <Noisy />
                 </Route>
                 <Route path="/">
                     <Home />
