@@ -29,7 +29,7 @@ const GeojsonMap = ({ geojsonURL, geojsonURL2, minCount, opacity = 1, zoomLevel 
         if (onZoneClick) {
             layer.on({
                 click: (e) => {
-                    onZoneClick(e.target.feature.properties.h3_07)
+                    onZoneClick(e.target.feature.properties.h3_07 || e.target.feature.properties.h3_09)
                 }
             })
         }
