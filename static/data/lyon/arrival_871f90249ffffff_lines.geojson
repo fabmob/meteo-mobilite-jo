@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "h3_07": "871f90242ffffff", "color": "#269300", "Count": 5, "UserCount": 4 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.040308637609103, 45.792144117339646 ], [ 4.918325610652843, 45.77548648982939 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f90249ffffff", "color": "#ff0000", "Count": 66, "UserCount": 18 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.040308637609103, 45.792144117339646 ], [ 5.040308637609103, 45.792144117339646 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f9024affffff", "color": "#a2d100", "Count": 21, "UserCount": 16 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.040308637609103, 45.792144117339646 ], [ 4.997606060039859, 45.767711836823104 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f9024bffffff", "color": "#4da700", "Count": 10, "UserCount": 9 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.040308637609103, 45.792144117339646 ], [ 5.028105498310477, 45.771866881373789 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f90254ffffff", "color": "#369b00", "Count": 7, "UserCount": 4 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.040308637609103, 45.792144117339646 ], [ 4.857393916439237, 45.767113483979735 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f9025cffffff", "color": "#269300", "Count": 5, "UserCount": 5 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.040308637609103, 45.792144117339646 ], [ 4.936637019478135, 45.759379626007252 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f9025dffffff", "color": "#9bcd00", "Count": 20, "UserCount": 10 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.040308637609103, 45.792144117339646 ], [ 4.967116562962544, 45.763549415803908 ] ] } }
+]
+}

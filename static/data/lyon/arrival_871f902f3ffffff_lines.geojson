@@ -1,0 +1,9 @@
+{
+"type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "h3_07": "871f902e6ffffff", "color": "#99cd00", "Count": 9, "UserCount": 5 }, "geometry": { "type": "LineString", "coordinates": [ [ 4.784690263781417, 45.645333837341738 ], [ 4.790591839696527, 45.702037781798154 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f902f3ffffff", "color": "#ff0000", "Count": 30, "UserCount": 14 }, "geometry": { "type": "LineString", "coordinates": [ [ 4.784690263781417, 45.645333837341738 ], [ 4.784690263781417, 45.645333837341738 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f902f5ffffff", "color": "#88c400", "Count": 8, "UserCount": 5 }, "geometry": { "type": "LineString", "coordinates": [ [ 4.784690263781417, 45.645333837341738 ], [ 4.778489478690932, 45.68173767124204 ] ] } }
+]
+}

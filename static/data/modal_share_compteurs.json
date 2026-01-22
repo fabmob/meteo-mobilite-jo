@@ -1,0 +1,8 @@
+{
+    "BIKE_TRIP":0.248,
+    "TRUCK": 0.116,
+    "BUS": 0.131,
+    "MOTORCYCLE":0.139,
+    "PASSENGER_CAR":0.177,
+    "SCOOTER":0.188
+}

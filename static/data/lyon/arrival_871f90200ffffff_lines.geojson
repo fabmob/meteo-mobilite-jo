@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "h3_07": "871f90200ffffff", "color": "#dbed00", "Count": 9, "UserCount": 8 }, "geometry": { "type": "LineString", "coordinates": [ [ 4.717326757187533, 45.766344499318194 ], [ 4.717326757187533, 45.766344499318194 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f90203ffffff", "color": "#ff0000", "Count": 21, "UserCount": 9 }, "geometry": { "type": "LineString", "coordinates": [ [ 4.717326757187533, 45.766344499318194 ], [ 4.735650659078028, 45.750279396731223 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f90204ffffff", "color": "#ffc300", "Count": 13, "UserCount": 7 }, "geometry": { "type": "LineString", "coordinates": [ [ 4.717326757187533, 45.766344499318194 ], [ 4.698997770502571, 45.782401879552083 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f9020effffff", "color": "#c3e100", "Count": 8, "UserCount": 4 }, "geometry": { "type": "LineString", "coordinates": [ [ 4.717326757187533, 45.766344499318194 ], [ 4.766071426424078, 45.75449890865815 ] ] } }
+]
+}

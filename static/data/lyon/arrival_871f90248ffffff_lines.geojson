@@ -1,0 +1,14 @@
+{
+"type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "h3_07": "871f90243ffffff", "color": "#369b00", "Count": 8, "UserCount": 4 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.009797957009969, 45.787990777736546 ], [ 4.948806431126409, 45.779661956286347 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f90248ffffff", "color": "#ff0000", "Count": 75, "UserCount": 25 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.009797957009969, 45.787990777736546 ], [ 5.009797957009969, 45.787990777736546 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f90249ffffff", "color": "#289400", "Count": 6, "UserCount": 6 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.009797957009969, 45.787990777736546 ], [ 5.040308637609103, 45.792144117339646 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f9024affffff", "color": "#fff500", "Count": 39, "UserCount": 20 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.009797957009969, 45.787990777736546 ], [ 4.997606060039859, 45.767711836823104 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f9024bffffff", "color": "#229100", "Count": 5, "UserCount": 5 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.009797957009969, 45.787990777736546 ], [ 5.028105498310477, 45.771866881373789 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f9025cffffff", "color": "#369b00", "Count": 8, "UserCount": 4 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.009797957009969, 45.787990777736546 ], [ 4.936637019478135, 45.759379626007252 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f9025dffffff", "color": "#3d9f00", "Count": 9, "UserCount": 6 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.009797957009969, 45.787990777736546 ], [ 4.967116562962544, 45.763549415803908 ] ] } },
+{ "type": "Feature", "properties": { "h3_07": "871f915a4ffffff", "color": "#289400", "Count": 6, "UserCount": 4 }, "geometry": { "type": "LineString", "coordinates": [ [ 5.009797957009969, 45.787990777736546 ], [ 5.015909760964329, 45.751585904241381 ] ] } }
+]
+}
